@@ -18,28 +18,28 @@
 // Set 0 if debouncing isn't needed
 #define DEBOUNCE 3
 
-#define DYNAMIC_MACRO_EEPROM_STORAGE
-#define DYNAMIC_MACRO_SIZE 128
+#define DYNAMIC_MACRO_EEPROM_STORAGE // Enable dynamic macro storage in EEPROM
+#define DYNAMIC_MACRO_SIZE 128 // Set dynamic macro size
 
 #ifdef RGB_MATRIX_ENABLE
-    #define RGB_MATRIX_LED_COUNT 104
-    #define RGB_MATRIX_KEYRELEASES // reactive effects respond to keyreleases (instead of keypresses)
-    // #define RGB_MATRIX_TIMEOUT 0 // number of milliseconds to wait until rgb automatically turns off
-    // #define RGB_MATRIX_SLEEP // turn off effects when suspended
-    #define RGB_MATRIX_LED_PROCESS_LIMIT (RGB_MATRIX_LED_COUNT + 4) / 5 // limits the number of LEDs to process in an animation per task run (increases keyboard responsiveness)
-    #define RGB_MATRIX_LED_FLUSH_LIMIT 10 // limits in milliseconds how frequently an animation will update the LEDs. 16 (16ms) is equivalent to limiting to 60fps (increases keyboard responsiveness)
-    #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 120 // limits maximum brightness of LEDs to 200 out of 255. If not defined maximum brightness is set to 255
+    #define RGB_MATRIX_LED_COUNT 104 // Total number of LEDs
+    #define RGB_MATRIX_KEYRELEASES // Reactive effects respond to key releases
+    // #define RGB_MATRIX_TIMEOUT 0 // Number of milliseconds to wait until RGB automatically turns off
+    // #define RGB_MATRIX_SLEEP // Turn off effects when suspended
+    #define RGB_MATRIX_LED_PROCESS_LIMIT (RGB_MATRIX_LED_COUNT + 4) / 5 // Limits the number of LEDs to process in an animation per task run (increases keyboard responsiveness)
+    #define RGB_MATRIX_LED_FLUSH_LIMIT 10 // Limits in milliseconds how frequently an animation will update the LEDs. 16 (16ms) is equivalent to limiting to 60fps (increases keyboard responsiveness)
+    #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 120 // Limits maximum brightness of LEDs to 120 out of 255. If not defined, maximum brightness is set to 255
     // #define RGB_MATRIX_DEFAULT_ON true // Sets the default enabled state, if none has been set
     // #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CYCLE_LEFT_RIGHT // Sets the default mode, if none has been set
     // #define RGB_MATRIX_DEFAULT_HUE 0 // Sets the default hue value, if none has been set
     // #define RGB_MATRIX_DEFAULT_SAT 255 // Sets the default saturation value, if none has been set
     // #define RGB_MATRIX_DEFAULT_VAL RGB_MATRIX_MAXIMUM_BRIGHTNESS // Sets the default brightness value, if none has been set
     #define RGB_MATRIX_DEFAULT_SPD 100 // Sets the default animation speed, if none has been set
-    #define RGB_MATRIX_TYPING_HEATMAP_DECREASE_DELAY_MS 50 // In order to change the delay of temperature decrease
-    #define RGB_MATRIX_TYPING_HEATMAP_SPREAD 40 // Limit the distance the effect spreads to surrounding keys.
-    #define RGB_MATRIX_TYPING_HEATMAP_AREA_LIMIT 16 // Limit how hot surrounding keys get from each press.
-    #define RGB_MATRIX_TYPING_HEATMAP_INCREASE_STEP 32 // Decreasing this value increases the number of keystrokes needed to fully heat up the key.
-    #define RGB_MATRIX_SOLID_REACTIVE_GRADIENT_MODE // Solid reactive effects will pulse RGB light on key presses with user configurable hues. To enable gradient mode that will automatically change reactive color, add the following define:
+    #define RGB_MATRIX_TYPING_HEATMAP_DECREASE_DELAY_MS 50 // Delay of temperature decrease for typing heatmap
+    #define RGB_MATRIX_TYPING_HEATMAP_SPREAD 40 // Limit the distance the effect spreads to surrounding keys
+    #define RGB_MATRIX_TYPING_HEATMAP_AREA_LIMIT 16 // Limit how hot surrounding keys get from each press
+    #define RGB_MATRIX_TYPING_HEATMAP_INCREASE_STEP 32 // Decreasing this value increases the number of keystrokes needed to fully heat up the key
+    #define RGB_MATRIX_SOLID_REACTIVE_GRADIENT_MODE // Enable gradient mode for solid reactive effects
     #define ENABLE_RGB_MATRIX_SOLID_COLOR
     #define ENABLE_RGB_MATRIX_ALPHAS_MODS
     // #define ENABLE_RGB_MATRIX_GRADIENT_UP_DOWN

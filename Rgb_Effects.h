@@ -7,7 +7,7 @@
 #define CAPS_LOCK_LED 60
 #define NUM_LOCK_LED 3
 
-// Function declarations
+// Function declarations for handling RGB effects
 void handle_caps_lock_rgb(void);
 void handle_num_lock_rgb(void);
 void handle_esc_ripple_effect(void);
