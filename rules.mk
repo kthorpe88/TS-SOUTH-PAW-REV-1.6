@@ -1,18 +1,13 @@
-# MCU name
-MCU = 
-
-# Bootloader selection
+MCU = STM32F072
+F_CPU = 48000000
 BOOTLOADER = stm32-dfu
-
-# Build Options
-#   change yes to no to disable
-#
-BOOTMAGIC_ENABLE = no      # Enable Bootmagic Lite
-MOUSEKEY_ENABLE = no        # Mouse keys
-EXTRAKEY_ENABLE = yes       # Audio control and System control
-CONSOLE_ENABLE = no         # Console for debug
-COMMAND_ENABLE = no         # Commands for debug and configuration
-NKRO_ENABLE = no            # Enable N-Key Rollover
-BACKLIGHT_ENABLE = no       # Enable keyboard backlight functionality
-RGBLIGHT_ENABLE = yes       # Enable keyboard RGB underglow
-AUDIO_ENABLE = no           # Audio output
+PLATFORM = chibios
+MANUFACTURER = TDC
+RGB_MATRIX_ENABLE = yes       # Enable RGB Matrix
+RGBLIGHT_ENABLE = no          # Disable RGB Light to avoid conflicts
+RGB_MATRIX_DRIVER = ws2812    # Specify the driver
+DYNAMIC_MACRO_ENABLE = yes
+RGB_MATRIX_FRAMEBUFFER_EFFECTS = yes
+RGB_MATRIX_KEYPRESSES = yes
+ENABLE_RGB_MATRIX_SOLID_REACTIVE_WIDE = yes
+SRC += rgb_effects.c
