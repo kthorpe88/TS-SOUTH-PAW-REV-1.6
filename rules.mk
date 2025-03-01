@@ -1,9 +1,9 @@
 # Microcontroller and clock speed
-MCU = STM32F072
-F_CPU = 48000000
+MCU = RP2040
+F_CPU = 133000000
 
 # Bootloader and platform
-BOOTLOADER = stm32-dfu
+BOOTLOADER = rp2040-uf2
 PLATFORM = chibios
 
 # Manufacturer information
@@ -19,6 +19,10 @@ DYNAMIC_MACRO_ENABLE = yes
 RGB_MATRIX_FRAMEBUFFER_EFFECTS = yes
 RGB_MATRIX_KEYPRESSES = yes
 ENABLE_RGB_MATRIX_SOLID_REACTIVE_WIDE = yes
+
+# Bluetooth and battery management
+BLUETOOTH_ENABLE = yes
+BATTERY_CHARGING_ENABLE = yes
 
 # Source files
 SRC += rgb_effects.c

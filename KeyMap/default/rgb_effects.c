@@ -36,6 +36,22 @@ const uint8_t esc_splash_ripple[][10] = {
 };
 const uint8_t ripple_layers = sizeof(esc_splash_ripple) / sizeof(esc_splash_ripple[0]); // Number of ripple layers
 
+#ifdef RP2040
+    // RP2040 specific RGB configurations
+#endif
+
+#ifdef ESP32_C3
+    // ESP32-C3 specific RGB configurations
+#endif
+
+#ifdef BLUETOOTH_ENABLE
+    // Bluetooth specific RGB configurations
+#endif
+
+#ifdef BATTERY_CHARGING_ENABLE
+    // Battery charging specific RGB configurations
+#endif
+
 void handle_caps_lock_rgb(void) {
     if (host_keyboard_led_state().caps_lock) { // Check if Caps Lock is active
         if (!pulse_active_caps) { // If pulsing is not active

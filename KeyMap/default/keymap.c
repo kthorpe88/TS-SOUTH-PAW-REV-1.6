@@ -68,3 +68,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_NO,   _______, _______, KC_NO  , _______, _______, _______, _______, _______, KC_NO  , KC_NO  , KC_NO  , _______, KC_NO  , KC_NO  , KC_NO  , _______, _______, MO(FN) , _______                      
     ),
 };
+
+#ifdef RP2040
+    // RP2040 specific keymap configurations
+#endif
+
+#ifdef ESP32_C3
+    // ESP32-C3 specific keymap configurations
+#endif
+
+#ifdef BLUETOOTH_ENABLE
+    // Bluetooth specific keymap configurations
+#endif
+
+#ifdef BATTERY_CHARGING_ENABLE
+    // Battery charging specific keymap configurations
+#endif

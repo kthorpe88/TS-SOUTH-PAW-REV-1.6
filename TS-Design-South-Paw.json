@@ -30,8 +30,8 @@
         "pin": "A15"
     },
     "diode_direction": "COL2ROW",
-    "processor": "STM32F072",
-    "bootloader": "stm32-dfu",
+    "processor": "RP2040", // Updated processor
+    "bootloader": "rp2040-uf2", // Updated bootloader
     "layouts": {
         "LAYOUT": {
             "layout": [

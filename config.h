@@ -115,3 +115,35 @@
         }                                                                              \
     }
 #endif
+
+// RP2040 specific configurations
+#ifdef RP2040
+    #define RP2040_BOOTLOADER_DOUBLE_TAP_RESET
+    #define RP2040_BOOTLOADER_DOUBLE_TAP_RESET_TIMEOUT 500U
+    #define RP2040_BOOTLOADER_DOUBLE_TAP_RESET_LED_PIN 25
+#endif
+
+// ESP32-C3 specific configurations
+#ifdef ESP32_C3
+    #define ESP32_C3_BOOTLOADER
+    #define ESP32_C3_WIFI_ENABLE
+    #define ESP32_C3_BLE_ENABLE
+    #define ESP32_C3_BATTERY_CHARGING_ENABLE
+    #define ESP32_C3_BATTERY_PIN 35 // Example pin for battery voltage monitoring
+#endif
+
+// Bluetooth configurations
+#ifdef BLUETOOTH_ENABLE
+    #define BLE_ENABLE
+    #define BLE_HID_ENABLE
+    #define BLE_HID_PROFILE 0 // 0 for keyboard, 1 for mouse
+    #define BLE_HID_DEVICE_NAME "TS-South-Paw"
+    #define BLE_HID_MANUFACTURER "TS Design Works LLC"
+    #define BLE_HID_SERIAL_NUMBER "1234567890"
+#endif
+
+// Battery charging configurations
+#ifdef BATTERY_CHARGING_ENABLE
+    #define BATTERY_CHARGING_PIN 35 // Example pin for battery voltage monitoring
+    #define BATTERY_CHARGING_THRESHOLD 3.7 // Voltage threshold for charging
+#endif
