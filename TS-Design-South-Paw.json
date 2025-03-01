@@ -2,7 +2,7 @@
     "keyboard_name": "ts-south-paw-rev-1.6", 
     "url": "", 
     "maintainer": "ts design works llc", 
-    usb": {
+    "usb": {
         "vid": "0x7856",
         "pid": "0x6163",
         "device_version": "0.0.2"
@@ -25,11 +25,11 @@
     "matrix_pins": {
         "cols": ["A9", "A8", "B15", "B14", "B13", "B12", "B11", "B10", "B2", "B1", "A3", "A2", "A1", "A0", "B9", "B8", "B7", "B4", "B6", "B5"],
         "rows": ["B3", "B0", "A7", "A6", "A5", "A4"]
-     },
+    },
     "ws2812": {
         "pin": "A15"
     },
-	"diode_direction": "COL2ROW",
+    "diode_direction": "COL2ROW",
     "processor": "STM32F072",
     "bootloader": "stm32-dfu",
     "layouts": {
@@ -74,7 +74,7 @@
             {"label":"+", "matrix": [1, 16], "x":16.25, "y":1.5},
             {"label":"Backspace", "matrix": [1, 18], "x":17.25, "y":1.5, "w":1.5},
             {"label":"DM_REC1", "matrix": [1, 19], "x":18.75, "y":1.5},
-			
+            
             {"label":"7", "matrix": [2, 0], "x":0, "y":2.5}, 
             {"label":"8", "matrix": [2, 1], "x":1, "y":2.5}, 
             {"label":"9", "matrix": [2, 2], "x":2, "y":2.5}, 
@@ -94,7 +94,7 @@
             {"label":"}", "matrix": [2, 17], "x":16.5, "y":2.5}, 
             {"label":"|", "matrix": [2, 18], "x":17.5, "y":2.5, "w":1.25},
             {"label":"DM_REC2", "matrix": [2, 19], "x":18.75, "y":2.5},
-			
+            
             {"label":"4", "matrix": [3, 0], "x":0, "y":3.5}, 
             {"label":"5", "matrix": [3, 1], "x":1, "y":3.5}, 
             {"label":"6", "matrix": [3, 2], "x":2, "y":3.5}, 
@@ -112,7 +112,7 @@
             {"label":"|", "matrix": [3, 16], "x":15.75, "y":3.5}, 
             {"label":"Enter", "matrix": [3, 17], "x":16.75, "y":3.5, "w":2}, 
             {"label":"DM_PLY1", "matrix": [3, 19], "x":18.75, "y":3.5},
-			
+            
             {"label":"1", "matrix": [4, 0], "x":0, "y":4.5}, 
             {"label":"2", "matrix": [4, 1], "x":1, "y":4.5}, 
             {"label":"3", "matrix": [4, 2], "x":2, "y":4.5}, 
@@ -131,7 +131,7 @@
             {"label":"Shift", "matrix": [4, 16], "x":16, "y":4.5, "w":1.5}, 
             {"label":"u2191", "matrix": [4, 18], "x":17.5, "y":4.5, "w":1.25}, 
             {"label":"DM_PLY2", "matrix": [4, 19], "x":18.75, "y":4.5},
-			
+            
             {"label":"0", "matrix": [5, 1], "x":0, "y":5.5, "w":2}, 
             {"label":".", "matrix": [5, 2], "x":2, "y":5.5}, 
             {"label":"Ctrl", "matrix": [5, 4], "x":4.25, "y":5.5}, 
@@ -144,5 +144,7 @@
             {"label":"u2190", "matrix": [5, 17], "x":16.5, "y":5.5}, 
             {"label":"u2193", "matrix": [5, 18], "x":17.5, "y":5.5, "w":1.25}, 
             {"label":"u2192", "matrix": [5, 19], "x":18.75, "y":5.5}
-	       ]
+            ]
         }
+    }
+}
