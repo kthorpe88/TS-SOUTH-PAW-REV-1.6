@@ -1,11 +1,11 @@
 # TS-SOUTH-PAW-REV-1.6
-Fullsize South Paw Mechanical Keyboard
-104 hot swap switches
-RGB key switch lighting  
-Dual MCU - RP-2040 & ESP-32-C3
-Wireless/Bluetooth
-USB-C
-ON-Board LIPO
+Fullsize South Paw Mechanical Keyboard,
+104 hot swap switches,
+RGB key switch lighting,  
+Dual MCU - RP-2040 & ESP-32-C3,
+Wireless/Bluetooth,
+USB-C,
+ON-Board LIPO.
 
 * Keyboard Maintainer: (TS Design Works LLC)
 * Hardware Supported: TS-SOUTH-PAW-REV-1.6 PCB
