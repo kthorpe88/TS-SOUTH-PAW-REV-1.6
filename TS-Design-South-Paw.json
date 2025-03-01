@@ -9,6 +9,7 @@
     },
     "features": {
         "backlight": false,
+    
         "bootmagic": true,
         "command": false,
         "console": false,
