@@ -124,3 +124,9 @@ void handle_esc_ripple_effect(void) {
         }
     }
 }
+
+uint8_t read_battery_level(void) {
+    // Implement the function to read the battery level from the specified pin
+    // This is a placeholder implementation and should be replaced with actual code
+    return analogRead(BATTERY_LEVEL_PIN) * 100 / 1023; // Example implementation
+}

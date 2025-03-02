@@ -21,6 +21,11 @@
 #define DYNAMIC_MACRO_EEPROM_STORAGE // Enable dynamic macro storage in EEPROM
 #define DYNAMIC_MACRO_SIZE 128 // Set dynamic macro size
 
+// Rotary encoder configuration
+#define ENCODERS_PAD_A { B2 } // Define the pin for encoder pad A
+#define ENCODERS_PAD_B { B3 } // Define the pin for encoder pad B
+#define ENCODER_RESOLUTION 4 // Set the resolution for the encoder
+
 #ifdef RGB_MATRIX_ENABLE
     #define RGB_MATRIX_LED_COUNT 104 // Total number of LEDs
     #define RGB_MATRIX_KEYRELEASES // Reactive effects respond to key releases
@@ -147,3 +152,6 @@
     #define BATTERY_CHARGING_PIN 35 // Example pin for battery voltage monitoring
     #define BATTERY_CHARGING_THRESHOLD 3.7 // Voltage threshold for charging
 #endif
+
+// Battery level indication configuration
+#define BATTERY_LEVEL_PIN 35 // Define the pin for battery level monitoring
