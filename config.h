@@ -22,8 +22,8 @@
 #define DYNAMIC_MACRO_SIZE 128 // Set dynamic macro size
 
 // Rotary encoder configuration
-#define ENCODERS_PAD_A { B2 } // Define the pin for encoder pad A
-#define ENCODERS_PAD_B { B3 } // Define the pin for encoder pad B
+#define ENCODERS_PAD_A { GPIO11 } // Define the pin for encoder pad A
+#define ENCODERS_PAD_B { GPIO10 } // Define the pin for encoder pad B
 #define ENCODER_RESOLUTION 4 // Set the resolution for the encoder
 
 #ifdef RGB_MATRIX_ENABLE
@@ -90,14 +90,21 @@
     #define LED_CONFIG                                                                 \
     {                                                                                  \
         {                                                                              \
+            /* Row 0 */                                                                \
             {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18}, \
+            /* Row 1 */                                                                \
             {19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37}, \
+            /* Row 2 */                                                                \
             {38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56}, \
+            /* Row 3 */                                                                \
             {57, 58, 59, NO_LED, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, NO_LED, 73}, \
+            /* Row 4 */                                                                \
             {74, 75, 76, 77, NO_LED, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, NO_LED, 90}, \
+            /* Row 5 */                                                                \
             {NO_LED, 92, 93, NO_LED, 94, 95, 96, 97, NO_LED, 98, 99, 100, 101, 102, 103} \
         },                                                                             \
         {                                                                              \
+            /* X and Y coordinates for each LED */                                     \
             {0, 0}, {10, 0}, {20, 0}, {30, 0}, {40, 0}, {50, 0}, {60, 0}, {70, 0},      \
             {80, 0}, {90, 0}, {100, 0}, {110, 0}, {120, 0}, {130, 0}, {140, 0},         \
             {150, 0}, {160, 0}, {170, 0}, {180, 0}, {0, 10}, {10, 10}, {20, 10},        \
@@ -111,6 +118,7 @@
             {140, 30}, {150, 30}, {160, 30}, {170, 30}                                  \
         },                                                                             \
         {                                                                              \
+            /* Brightness level for each LED */                                        \
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,                   \
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,                   \
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,                   \
@@ -128,7 +136,7 @@
     #define RP2040_BOOTLOADER_DOUBLE_TAP_RESET_LED_PIN 25
     #define MATRIX_ROW_PINS { GPIO29, GPIO28, GPIO21, GPIO20, GPIO19, GPIO18 }
     #define MATRIX_COL_PINS { GPIO26, GPIO25, GPIO24, GPIO23, GPIO22, GPIO16, GPIO17, GPIO15, GPIO14, GPIO13, GPIO12, GPIO11, GPIO10, GPIO9, GPIO8, GPIO7, GPIO6, GPIO5, GPIO4, GPIO3, GPIO2 }
-    #define RGB_DI_PIN GPIO27
+    #define RGB_DI_PIN GPIO27 // Define the pin for RGB LED data input
     #define SERIAL_TX_PIN GPIO1
     #define SERIAL_RX_PIN GPIO0
 #endif
@@ -140,6 +148,8 @@
     #define ESP32_C3_BLE_ENABLE
     #define ESP32_C3_BATTERY_CHARGING_ENABLE
     #define ESP32_C3_BATTERY_PIN 35 // Example pin for battery voltage monitoring
+    #define ENCODERS_PAD_A { GPIO11 } // Define the pin for encoder pad A
+    #define ENCODERS_PAD_B { GPIO10 } // Define the pin for encoder pad B
 #endif
 
 // Bluetooth configurations
@@ -154,7 +164,7 @@
 
 // Battery charging configurations
 #ifdef BATTERY_CHARGING_ENABLE
-    #define BATTERY_CHARGING_PIN 35 // Example pin for battery voltage monitoring
+    #define BATTERY_CHARGING_PIN  // Example pin for battery voltage monitoring
     #define BATTERY_CHARGING_THRESHOLD 3.7 // Voltage threshold for charging
 #endif
 

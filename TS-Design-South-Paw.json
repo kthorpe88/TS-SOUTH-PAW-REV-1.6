@@ -27,7 +27,7 @@
         "rows": ["GPIO29", "GPIO28", "GPIO21", "GPIO20", "GPIO19", "GPIO18"]
     },
     "ws2812": {
-        "pin": "GPIO27"
+        "pin": "GPIO27" // Define the pin for RGB LED data input
     },
     "diode_direction": "COL2ROW",
     "processor": "RP2040",
