@@ -1,7 +1,7 @@
 {
-    "keyboard_name": "ts-south-paw-rev-1.6", 
+    "keyboard_name": "ts_south_paw_rev_1_6", 
     "url": "", 
-    "maintainer": "ts design works llc", 
+    "maintainer": "ts_design_works_llc", 
     "usb": {
         "vid": "0x7856",
         "pid": "0x6163",
@@ -23,15 +23,27 @@
         }
     },
     "matrix_pins": {
-        "cols": ["A9", "A8", "B15", "B14", "B13", "B12", "B11", "B10", "B2", "B1", "A3", "A2", "A1", "A0", "B9", "B8", "B7", "B4", "B6", "B5"],
-        "rows": ["B3", "B0", "A7", "A6", "A5", "A4"]
+        "cols": ["GPIO26", "GPIO25", "GPIO24", "GPIO23", "GPIO22", "GPIO16", "GPIO17", "GPIO15", "GPIO14", "GPIO13", "GPIO12", "GPIO11", "GPIO10", "GPIO9", "GPIO8", "GPIO7", "GPIO6", "GPIO5", "GPIO4", "GPIO3", "GPIO2"],
+        "rows": ["GPIO29", "GPIO28", "GPIO21", "GPIO20", "GPIO19", "GPIO18"]
     },
     "ws2812": {
-        "pin": "A15"
+        "pin": "GPIO27"
     },
     "diode_direction": "COL2ROW",
     "processor": "RP2040",
     "bootloader": "rp2040-uf2",
+    "encoder_pins": {
+        "encoder_A": "GPIO11",
+        "encoder_B": "GPIO10"
+    },
+    "usb_pins": {
+        "USBN": "GPIO12",
+        "USBP": "GPIO13"
+    },
+    "uart_pins": {
+        "U0RXD": "Rxd",
+        "U0TXD": "TxD"
+    },
     "layouts": {
         "LAYOUT": {
             "layout": [
