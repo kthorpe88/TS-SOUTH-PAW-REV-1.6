@@ -11,13 +11,16 @@
 #include "esp_bt_main.h"
 #include "esp_gap_bt_api.h"
 #include "esp_spp_api.h"
+#include "esp_hidd.h"
+#include "esp_hid_gap.h"
+#include "esp_hid_device.h"
 
 #define UART_NUM UART_NUM_0
 #define TXD_PIN GPIO17
 #define RXD_PIN GPIO16
 #define BAUD_RATE 115200
 
-static const char *TAG = "ESP32-C3";
+static const char *TAG = "ESP32-C6";
 
 void configure_uart()
 {
@@ -61,21 +64,76 @@ void configure_bluetooth()
         ESP_LOGE(TAG, "Bluedroid enable failed: %d", ret);
         return;
     }
-    esp_bt_dev_set_device_name("ESP32-C3 Keyboard");
+    esp_bt_dev_set_device_name("ESP32-C6 Keyboard");
     esp_bt_gap_register_callback(bluetooth_event_handler);
     ESP_LOGI(TAG, "Bluetooth initialized successfully");
 }
 
+void hid_event_callback(esp_hidd_cb_event_t event, esp_hidd_cb_param_t *param)
+{
+    switch (event)
+    {
+    case ESP_HIDD_EVENT_BLE_CONNECT:
+        ESP_LOGI(TAG, "HID connected");
+        break;
+    case ESP_HIDD_EVENT_BLE_DISCONNECT:
+        ESP_LOGI(TAG, "HID disconnected");
+        break;
+    default:
+        break;
+    }
+}
+
+void configure_hid()
+{
+    esp_hidd_dev_t *hid_dev;
+    esp_hidd_callbacks_t callbacks = {
+        .event_cb = hid_event_callback,
+        .report_cb = NULL,
+    };
+
+    esp_hid_device_register_callbacks(&callbacks);
+    esp_hid_device_init(&hid_dev);
+    esp_hid_device_start_services(hid_dev);
+    esp_hid_device_set_device_name("ESP32-C6 Keyboard");
+    ESP_LOGI(TAG, "HID initialized successfully");
+}
+
+void uart_task(void *arg)
+{
+    uint8_t data[128];
+    while (1)
+    {
+        int len = uart_read_bytes(UART_NUM, data, sizeof(data) - 1, pdMS_TO_TICKS(100));
+        if (len > 0)
+        {
+            data[len] = '\0'; // Null-terminate received data
+            ESP_LOGI(TAG, "Received from RP2040: %s", data);
+        }
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+}
+
+void send_keypress_to_bt(uint8_t keycode)
+{
+    char message[16];
+    snprintf(message, sizeof(message), "KEY:%02X", keycode);
+    uart_write_bytes(UART_NUM, message, strlen(message));
+    ESP_LOGI(TAG, "Sent keypress: %s", message);
+}
+
 void app_main()
 {
-    ESP_LOGI(TAG, "Starting ESP32-C3 Firmware");
+    ESP_LOGI(TAG, "Starting ESP32-C6 Firmware");
 
     configure_uart();
     configure_bluetooth();
+    configure_hid();
+    xTaskCreate(uart_task, "uart_task", 2048, NULL, 10, NULL);
 
     while (1)
     {
-        ESP_LOGI(TAG, "ESP32-C3 Running...");
+        ESP_LOGI(TAG, "ESP32-C6 Running...");
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }

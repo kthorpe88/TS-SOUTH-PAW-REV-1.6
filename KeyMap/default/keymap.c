@@ -15,6 +15,7 @@
 
 #include "rgb_effects.h" // Include custom RGB effects header
 #include QMK_KEYBOARD_H // Include QMK keyboard header
+#include "uart.h" // Include UART header
 
 led_config_t g_led_config = LED_CONFIG; // LED configuration
 
@@ -78,6 +79,10 @@ void indicate_battery_level(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (record->event.pressed) {
+        uart_send_keycode(keycode); // Send keypress over UART
+    }
+
     if (keycode == KC_ESC) { // Check if the keycode is ESC
         if (record->event.pressed) { // If the key is pressed
             start_esc_ripple_effect(); // Start ESC ripple effect
@@ -116,6 +121,8 @@ void keyboard_post_init_user(void) {
     rgb_matrix_sethsv(85, 255, 128); // Set RGB color to green, full saturation, 50% brightness
     // rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR); // Set mode without writing to EEPROM
     rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR); // Write the mode to EEPROM
+
+    uart_init(); // Initialize UART
 }
 
 bool encoder_update_user(uint8_t index, bool clockwise) {
