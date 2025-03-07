@@ -17,7 +17,7 @@
 #define RXD_PIN GPIO16
 #define BAUD_RATE 115200
 
-static const char *TAG = "ESP32-C6";
+static const char *TAG = "ESP32-C3";
 
 void configure_uart()
 {
@@ -61,21 +61,21 @@ void configure_bluetooth()
         ESP_LOGE(TAG, "Bluedroid enable failed: %d", ret);
         return;
     }
-    esp_bt_dev_set_device_name("ESP32-C6 Keyboard");
+    esp_bt_dev_set_device_name("ESP32-C3 Keyboard");
     esp_bt_gap_register_callback(bluetooth_event_handler);
     ESP_LOGI(TAG, "Bluetooth initialized successfully");
 }
 
 void app_main()
 {
-    ESP_LOGI(TAG, "Starting ESP32-C6 Firmware");
+    ESP_LOGI(TAG, "Starting ESP32-C3 Firmware");
 
     configure_uart();
     configure_bluetooth();
 
     while (1)
     {
-        ESP_LOGI(TAG, "ESP32-C6 Running...");
+        ESP_LOGI(TAG, "ESP32-C3 Running...");
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
