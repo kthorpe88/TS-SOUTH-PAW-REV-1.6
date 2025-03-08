@@ -25,33 +25,36 @@
 
 static const char *TAG = "ESP32-C6";
 
-void configure_uart()
-{
+// Function to configure UART
+void configure_uart() {
     uart_config_t uart_config = {
         .baud_rate = BAUD_RATE,
         .data_bits = UART_DATA_8_BITS,
-        .parity = UART_PARITY_DISABLE,
+        .parity    = UART_PARITY_DISABLE,
         .stop_bits = UART_STOP_BITS_1,
-        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE};
+        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
+    };
     if (uart_param_config(UART_NUM, &uart_config) != ESP_OK) {
-        ESP_LOGE(TAG, "UART parameter configuration failed");
+        ESP_LOGE(TAG, "UART configuration failed");
         return;
     }
     if (uart_set_pin(UART_NUM, TXD_PIN, RXD_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE) != ESP_OK) {
-        ESP_LOGE(TAG, "UART set pin failed");
+        ESP_LOGE(TAG, "UART pin setup failed");
         return;
     }
     if (uart_driver_install(UART_NUM, 1024, 0, 0, NULL, 0) != ESP_OK) {
-        ESP_LOGE(TAG, "UART driver install failed");
+        ESP_LOGE(TAG, "UART driver installation failed");
         return;
     }
 }
 
+// Bluetooth event handler
 void bluetooth_event_handler(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param)
 {
     ESP_LOGI(TAG, "Bluetooth event received: %d", event);
 }
 
+// Function to configure Bluetooth
 void configure_bluetooth()
 {
     esp_err_t ret;
@@ -81,6 +84,7 @@ void configure_bluetooth()
     ESP_LOGI(TAG, "Bluetooth initialized successfully");
 }
 
+// HID event callback
 void hid_event_callback(esp_hidd_cb_event_t event, esp_hidd_cb_param_t *param)
 {
     switch (event)
@@ -96,6 +100,7 @@ void hid_event_callback(esp_hidd_cb_event_t event, esp_hidd_cb_param_t *param)
     }
 }
 
+// Function to configure HID
 void configure_hid()
 {
     esp_hidd_dev_t *hid_dev;
@@ -104,13 +109,29 @@ void configure_hid()
         .report_cb = NULL,
     };
 
-    esp_hid_device_register_callbacks(&callbacks);
-    esp_hid_device_init(&hid_dev);
-    esp_hid_device_start_services(hid_dev);
+    esp_err_t ret = esp_hid_device_register_callbacks(&callbacks);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "HID callback registration failed: %d", ret);
+        return;
+    }
+
+    ret = esp_hid_device_init(&hid_dev);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "HID device initialization failed: %d", ret);
+        return;
+    }
+
+    ret = esp_hid_device_start_services(hid_dev);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "HID service start failed: %d", ret);
+        return;
+    }
+
     esp_hid_device_set_device_name("ESP32-C6 Keyboard");
     ESP_LOGI(TAG, "HID initialized successfully");
 }
 
+// Task to handle UART communication
 void uart_task(void *arg)
 {
     uint8_t data[128];
@@ -126,6 +147,7 @@ void uart_task(void *arg)
     }
 }
 
+// Function to send keypress to Bluetooth
 void send_keypress_to_bt(uint8_t keycode)
 {
     char message[16];
@@ -134,30 +156,46 @@ void send_keypress_to_bt(uint8_t keycode)
     ESP_LOGI(TAG, "Sent keypress: %s", message);
 }
 
-void usb_detect_task(void *arg)
-{
+// Task to detect USB connection and manage Bluetooth state
+void usb_detect_task(void *arg) {
     gpio_set_direction(USB_DETECT_PIN, GPIO_MODE_INPUT);
-    while (1)
-    {
-        int usb_connected = gpio_get_level(USB_DETECT_PIN);
-        if (usb_connected)
-        {
-            ESP_LOGI(TAG, "USB connected, switching to wired mode");
-            // Disable Bluetooth and HID
-            esp_bluedroid_disable();
-            esp_bt_controller_disable();
+    int previous_state = gpio_get_level(USB_DETECT_PIN);
+    int stable_count = 0;
+
+    while (1) {
+        int current_state = gpio_get_level(USB_DETECT_PIN);
+        if (current_state == previous_state) {
+            stable_count++;
+        } else {
+            stable_count = 0;
         }
-        else
-        {
-            ESP_LOGI(TAG, "USB disconnected, switching to wireless mode");
-            // Enable Bluetooth and HID
-            esp_bt_controller_enable(ESP_BT_MODE_CLASSIC_BT);
-            esp_bluedroid_enable();
+
+        if (stable_count >= 5) { // stable for 5 checks (~2.5 seconds debounce)
+            if (current_state) {
+                ESP_LOGI(TAG, "USB connected, disabling Bluetooth.");
+                if (esp_bluedroid_get_status() == ESP_BLUEDROID_STATUS_ENABLED) {
+                    esp_bluedroid_disable();
+                }
+                if (esp_bt_controller_get_status() == ESP_BT_CONTROLLER_STATUS_ENABLED) {
+                    esp_bt_controller_disable();
+                }
+            } else {
+                ESP_LOGI(TAG, "USB disconnected, enabling Bluetooth.");
+                if (esp_bt_controller_get_status() == ESP_BT_CONTROLLER_STATUS_IDLE) {
+                    esp_bt_controller_enable(ESP_BT_MODE_CLASSIC_BT);
+                }
+                if (esp_bluedroid_get_status() == ESP_BLUEDROID_STATUS_UNINITIALIZED) {
+                    esp_bluedroid_enable();
+                }
+            }
+            stable_count = 0;
         }
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        previous_state = current_state;
+        vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
 
+// Main application entry point
 void app_main()
 {
     ESP_LOGI(TAG, "Starting ESP32-C6 Firmware");

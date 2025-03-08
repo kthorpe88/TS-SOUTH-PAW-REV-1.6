@@ -18,6 +18,7 @@
 // Set 0 if debouncing isn't needed
 #define DEBOUNCE 3
 
+// Dynamic macro configuration
 #define DYNAMIC_MACRO_EEPROM_STORAGE // Enable dynamic macro storage in EEPROM
 #define DYNAMIC_MACRO_SIZE 128 // Set dynamic macro size
 
@@ -27,6 +28,7 @@
 #define ENCODER_RESOLUTION 4 // Set the resolution for the encoder
 
 #ifdef RGB_MATRIX_ENABLE
+    // RGB Matrix configuration
     #define RGB_MATRIX_LED_COUNT 104 // Total number of LEDs
     #define RGB_MATRIX_KEYRELEASES // Reactive effects respond to key releases
     // #define RGB_MATRIX_TIMEOUT 0 // Number of milliseconds to wait until RGB automatically turns off
@@ -127,13 +129,24 @@
             1, 1, 1, 1, 1, 1, 1, 1, 1                                                   \
         }                                                                              \
     }
+
+    // RGB-related constants
+    #define CAPS_LOCK_LED 1
+    #define ESC_RIPPLE_COLOR_RED 255
+    #define ESC_RIPPLE_COLOR_GREEN 0
+    #define ESC_RIPPLE_COLOR_BLUE 0
+    #define RGB_MATRIX_CAPS_LOCK_COLOR {255, 0, 0} // Red color for Caps Lock
+    #define RGB_MATRIX_NUM_LOCK_COLOR {0, 255, 0} // Green color for Num Lock
+    #define RGB_MATRIX_SCROLL_LOCK_COLOR {0, 0, 255} // Blue color for Scroll Lock
 #endif // RGB_MATRIX_ENABLE
 
 // RP2040 specific configurations
 #ifdef RP2040
+    // Bootloader configuration
     #define RP2040_BOOTLOADER_DOUBLE_TAP_RESET
     #define RP2040_BOOTLOADER_DOUBLE_TAP_RESET_TIMEOUT 500U
     #define RP2040_BOOTLOADER_DOUBLE_TAP_RESET_LED_PIN 25
+    // Matrix configuration
     #define MATRIX_ROW_PINS { GPIO29, GPIO28, GPIO21, GPIO20, GPIO19, GPIO18 }
     #define MATRIX_COL_PINS { GPIO26, GPIO25, GPIO24, GPIO23, GPIO22, GPIO16, GPIO17, GPIO15, GPIO14, GPIO13, GPIO12, GPIO11, GPIO10, GPIO9, GPIO8, GPIO7, GPIO6, GPIO5, GPIO4, GPIO3, GPIO2 }
     #define RGB_DI_PIN GPIO27 // Define the pin for RGB LED data input
@@ -143,15 +156,21 @@
 
 // ESP32-C6 specific configurations
 #ifdef ESP32_C6
+    // Bootloader configuration
     #define ESP32_C6_BOOTLOADER
+    // WiFi and BLE configuration
     #define ESP32_C6_WIFI_ENABLE
     #define ESP32_C6_BLE_ENABLE
+    // Battery charging configuration
     #define ESP32_C6_BATTERY_CHARGING_ENABLE
     #define ESP32_C6_BATTERY_PIN 35 // Example pin for battery voltage monitoring
+    // Encoder configuration
     #define ENCODERS_PAD_A { GPIO11 } // Updated to match the provided mapping
     #define ENCODERS_PAD_B { GPIO10 } // Updated to match the provided mapping
+    // USB configuration
     #define ESP32_C6_USBN_PIN GPIO12 // Updated to match the provided mapping
     #define ESP32_C6_USBP_PIN GPIO13 // Updated to match the provided mapping
+    // Serial configuration
     #define SERIAL_TX_PIN GPIO29 // Updated to match the provided mapping
     #define SERIAL_RX_PIN GPIO30 // Updated to match the provided mapping
 #endif

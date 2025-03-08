@@ -52,6 +52,7 @@ const uint8_t ripple_layers = sizeof(esc_splash_ripple) / sizeof(esc_splash_ripp
     // Battery charging specific RGB configurations
 #endif
 
+// Function to handle Caps Lock RGB lighting
 void handle_caps_lock_rgb(void) {
     if (host_keyboard_led_state().caps_lock) { // Check if Caps Lock is active
         if (!pulse_active_caps) { // If pulsing is not active
@@ -69,8 +70,9 @@ void handle_caps_lock_rgb(void) {
     }
 }
 
+// Function to handle Num Lock RGB lighting
 void handle_num_lock_rgb(void) {
-    if (!host_keyboard_led_state().num_lock) { // Check if Num Lock is active
+    if (host_keyboard_led_state().num_lock) { // Check if Num Lock is active
         if (!pulse_active_num) { // If pulsing is not active
             prev_rgb_mode_num = rgb_matrix_get_mode(); // Save current RGB mode
             pulse_active_num = true; // Set pulsing active flag
@@ -86,6 +88,7 @@ void handle_num_lock_rgb(void) {
     }
 }
 
+// Function to start the ESC ripple effect
 void start_esc_ripple_effect(void) {
     is_esc_active = true; // Set ESC ripple effect active flag
     ripple_step = 0; // Reset ripple step
@@ -93,10 +96,12 @@ void start_esc_ripple_effect(void) {
     ripple_expanding = true; // Set ripple expanding flag
 }
 
+// Function to stop the ESC ripple effect
 void stop_esc_ripple_effect(void) {
     is_esc_active = false; // Reset ESC ripple effect active flag
 }
 
+// Function to handle the ESC ripple effect
 void handle_esc_ripple_effect(void) {
     if (is_esc_active) { // Check if ESC ripple effect is active
         if (timer_elapsed(ripple_timer) > 15) { // Check if it's time to update the ripple effect
@@ -125,8 +130,9 @@ void handle_esc_ripple_effect(void) {
     }
 }
 
+// Function to read the battery level
 uint8_t read_battery_level(void) {
-    // Implement the function to read the battery level from the specified pin
-    // This is a placeholder implementation and should be replaced with actual code
-    return analogRead(BATTERY_LEVEL_PIN) * 100 / 1023; // Example implementation
+    uint32_t adc_reading = analogRead(BATTERY_LEVEL_PIN);
+    uint8_t battery_percentage = (adc_reading * 100) / 4095; // Adjust if necessary
+    return battery_percentage;
 }

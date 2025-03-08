@@ -80,33 +80,36 @@ void indicate_battery_level(void) {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
-        uart_send_keycode(keycode); // Send keypress over UART
-    }
+        uart_send_keycode(keycode); // Send keycode via UART
 
-    if (keycode == KC_ESC) { // Check if the keycode is ESC
-        if (record->event.pressed) { // If the key is pressed
-            start_esc_ripple_effect(); // Start ESC ripple effect
-            tap_code16(KC_ESC); // Send ESC keypress
-        } else {
+        switch (keycode) {
+            case KC_ESC:
+                start_esc_ripple_effect(); // Start ESC ripple effect
+                tap_code16(KC_ESC); // Send ESC keycode
+                return false;
+
+            case KC_MUTE:
+                tap_code(KC_MUTE); // Mute audio
+                tap_code(KC_MPLY); // Play/pause media
+                return false;
+
+            case KC_BATT_LVL:
+                indicate_battery_level(); // Indicate battery level
+                return false;
+
+            case MO(FN):
+                indicate_battery_level(); // Indicate battery level when switching to FN layer
+                break;
+
+            default:
+                break;
+        }
+    } else {
+        if (keycode == KC_ESC) {
             stop_esc_ripple_effect(); // Stop ESC ripple effect
         }
-        return false; // Skip default processing
     }
-    if (keycode == KC_MUTE) { // Check if the keycode is MUTE
-        if (record->event.pressed) { // If the key is pressed
-            tap_code(KC_MUTE); // Mute audio
-            tap_code(KC_MPLY); // Pause audio/video
-        }
-        return false; // Skip default processing
-    }
-    if (keycode == KC_BATT_LVL && record->event.pressed) {
-        indicate_battery_level(); // Indicate battery level when KC_BATT_LVL is pressed
-        return false; // Skip default processing
-    }
-    if (keycode == MO(FN) && record->event.pressed) {
-        indicate_battery_level(); // Indicate battery level when FN key is pressed
-    }
-    return true; // Continue default processing for other keycodes
+    return true;
 }
 
 bool rgb_matrix_indicators_user(void) {
