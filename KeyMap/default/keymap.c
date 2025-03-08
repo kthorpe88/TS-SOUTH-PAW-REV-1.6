@@ -158,8 +158,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // RP2040 specific keymap configurations
 #endif
 
-#ifdef ESP32_C3
-    // ESP32-C3 specific keymap configurations
+#ifdef ESP32_C6
+    // ESP32-C6 specific keymap configurations
 #endif
 
 #ifdef BLUETOOTH_ENABLE

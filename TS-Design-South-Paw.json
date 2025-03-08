@@ -37,8 +37,8 @@
         "encoder_B": "GPIO10"
     },
     "usb_pins": {
-        "USBN": "GPIO12",
-        "USBP": "GPIO13"
+        "USBN": "USB_DM",
+        "USBP": "USB_DP"
     },
     "uart_pins": {
         "U0RXD": "Rxd",

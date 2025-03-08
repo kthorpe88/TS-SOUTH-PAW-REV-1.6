@@ -16,10 +16,12 @@
 #include "esp_hid_device.h"
 
 #define UART_NUM UART_NUM_0
-#define TXD_PIN GPIO17
-#define RXD_PIN GPIO16
+#define TXD_PIN GPIO1  // Updated TXD pin for RP2040
+#define RXD_PIN GPIO0  // Updated RXD pin for RP2040
 #define BAUD_RATE 115200
 #define USB_DETECT_PIN GPIO19 // Define the pin to detect USB connection
+#define ENC_A_PIN GPIO11 // Updated encoder A pin
+#define ENC_B_PIN GPIO10 // Updated encoder B pin
 
 static const char *TAG = "ESP32-C6";
 
@@ -165,6 +167,10 @@ void app_main()
     configure_hid();
     xTaskCreate(uart_task, "uart_task", 2048, NULL, 10, NULL);
     xTaskCreate(usb_detect_task, "usb_detect_task", 2048, NULL, 10, NULL);
+
+    // Configure encoder pins as input
+    gpio_set_direction(ENC_A_PIN, GPIO_MODE_INPUT);
+    gpio_set_direction(ENC_B_PIN, GPIO_MODE_INPUT);
 
     while (1)
     {

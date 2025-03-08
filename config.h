@@ -22,8 +22,8 @@
 #define DYNAMIC_MACRO_SIZE 128 // Set dynamic macro size
 
 // Rotary encoder configuration
-#define ENCODERS_PAD_A { GPIO11 } // Define the pin for encoder pad A
-#define ENCODERS_PAD_B { GPIO10 } // Define the pin for encoder pad B
+#define ENCODERS_PAD_A { GPIO16 } // Define the pin for encoder pad A
+#define ENCODERS_PAD_B { GPIO17 } // Define the pin for encoder pad B
 #define ENCODER_RESOLUTION 4 // Set the resolution for the encoder
 
 #ifdef RGB_MATRIX_ENABLE
@@ -127,7 +127,7 @@
             1, 1, 1, 1, 1, 1, 1, 1, 1                                                   \
         }                                                                              \
     }
-#endif
+#endif // RGB_MATRIX_ENABLE
 
 // RP2040 specific configurations
 #ifdef RP2040
@@ -137,19 +137,23 @@
     #define MATRIX_ROW_PINS { GPIO29, GPIO28, GPIO21, GPIO20, GPIO19, GPIO18 }
     #define MATRIX_COL_PINS { GPIO26, GPIO25, GPIO24, GPIO23, GPIO22, GPIO16, GPIO17, GPIO15, GPIO14, GPIO13, GPIO12, GPIO11, GPIO10, GPIO9, GPIO8, GPIO7, GPIO6, GPIO5, GPIO4, GPIO3, GPIO2 }
     #define RGB_DI_PIN GPIO27 // Define the pin for RGB LED data input
-    #define SERIAL_TX_PIN GPIO1
-    #define SERIAL_RX_PIN GPIO0
+    #define SERIAL_TX_PIN GPIO0 // Updated to match the provided mapping
+    #define SERIAL_RX_PIN GPIO1 // Updated to match the provided mapping
 #endif
 
-// ESP32-C3 specific configurations
-#ifdef ESP32_C3
-    #define ESP32_C3_BOOTLOADER
-    #define ESP32_C3_WIFI_ENABLE
-    #define ESP32_C3_BLE_ENABLE
-    #define ESP32_C3_BATTERY_CHARGING_ENABLE
-    #define ESP32_C3_BATTERY_PIN 35 // Example pin for battery voltage monitoring
-    #define ENCODERS_PAD_A { GPIO11 } // Define the pin for encoder pad A
-    #define ENCODERS_PAD_B { GPIO10 } // Define the pin for encoder pad B
+// ESP32-C6 specific configurations
+#ifdef ESP32_C6
+    #define ESP32_C6_BOOTLOADER
+    #define ESP32_C6_WIFI_ENABLE
+    #define ESP32_C6_BLE_ENABLE
+    #define ESP32_C6_BATTERY_CHARGING_ENABLE
+    #define ESP32_C6_BATTERY_PIN 35 // Example pin for battery voltage monitoring
+    #define ENCODERS_PAD_A { GPIO11 } // Updated to match the provided mapping
+    #define ENCODERS_PAD_B { GPIO10 } // Updated to match the provided mapping
+    #define ESP32_C6_USBN_PIN GPIO12 // Updated to match the provided mapping
+    #define ESP32_C6_USBP_PIN GPIO13 // Updated to match the provided mapping
+    #define SERIAL_TX_PIN GPIO29 // Updated to match the provided mapping
+    #define SERIAL_RX_PIN GPIO30 // Updated to match the provided mapping
 #endif
 
 // Bluetooth configurations
@@ -166,7 +170,7 @@
 #ifdef BATTERY_CHARGING_ENABLE
     #define BATTERY_CHARGING_PIN  // Example pin for battery voltage monitoring
     #define BATTERY_CHARGING_THRESHOLD 3.7 // Voltage threshold for charging
-#endif
+#endif // BATTERY_CHARGING_ENABLE
 
 // Battery level indication configuration
 #define BATTERY_LEVEL_PIN 35 // Define the pin for battery level monitoring

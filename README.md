@@ -5,7 +5,7 @@ Fullsize South Paw Mechanical Keyboard,
 104 hot swap switches,
 Rotary Knob,
 RGB key switch lighting,  
-Dual MCU - RP-2040 & ESP-32-C3,
+Dual MCU - RP-2040 & ESP-32-C6,
 Wireless/Bluetooth,
 USB-C,
 ON-Board LIPO.
