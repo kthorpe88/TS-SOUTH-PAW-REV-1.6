@@ -27,12 +27,10 @@ Battery Charging.
       qmk compile -kb ts-south-paw-rev-1.6 -km default
 
 ## Bootloader section
-* Must enter Bootloader
-    
-    ## Bootloader
+* Must enter Bootloader mode to flash firmware.
 
 ## Instructions to enter the bootloader
-* Enter the bootloader 
+* Enter the bootloader using one of the following methods:
 
    **Physical reset button**: Briefly press the button on the back of the PCB.
 
