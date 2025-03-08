@@ -23,8 +23,8 @@
 #define DYNAMIC_MACRO_SIZE 128 // Set dynamic macro size
 
 // Rotary encoder configuration
-#define ENCODERS_PAD_A { GPIO16 } // Define the pin for encoder pad A
-#define ENCODERS_PAD_B { GPIO17 } // Define the pin for encoder pad B
+#define ENCODERS_PAD_A { GPIO11 } // Define the pin for encoder pad A
+#define ENCODERS_PAD_B { GPIO10 } // Define the pin for encoder pad B
 #define ENCODER_RESOLUTION 4 // Set the resolution for the encoder
 
 #ifdef RGB_MATRIX_ENABLE
