@@ -17,6 +17,9 @@
 #include QMK_KEYBOARD_H // Include QMK keyboard header
 #include "uart.h" // Include UART header
 
+#define SLEEP_TIMEOUT 300000 // 5 minutes in milliseconds
+static uint32_t sleep_timer = 0; // Timer to track inactivity
+
 led_config_t g_led_config = LED_CONFIG; // LED configuration
 
 enum layers {
@@ -29,6 +32,7 @@ enum custom_keycodes {
     // ...other custom keycodes...
 };
 
+// Function to indicate battery level using RGB LEDs
 void indicate_battery_level(void) {
     uint8_t battery_level = read_battery_level(); // Read the battery level
     uint8_t leds_to_light = (battery_level * 12) / 100; // Calculate the number of LEDs to light up
@@ -78,6 +82,39 @@ void indicate_battery_level(void) {
     }
 }
 
+// Function to scan the matrix and handle sleep mode and USB connection
+void matrix_scan_user(void) {
+    // Check if the sleep timeout has been reached and USB is not connected
+    if (timer_elapsed32(sleep_timer) > SLEEP_TIMEOUT && !usb_connected()) {
+        // Enter sleep mode
+        rgb_matrix_disable(); // Turn off LEDs
+        suspend_power_down(); // QMK suspend function
+    }
+    // Reset the sleep timer on any keypress
+    if (matrix_is_modified()) { // Any keypress resets timer
+        sleep_timer = timer_read32();
+        rgb_matrix_enable(); // Wake LEDs
+        suspend_wakeup_init(); // Wake from suspend
+    }
+
+    // Adjust RGB matrix brightness when connected via USB
+    if (usb_connected()) {
+        rgb_matrix_set_val(80); // Lower brightness in wired mode
+    }
+}
+
+// Function to check if USB is connected
+bool usb_connected(void) {
+    return gpio_get_level(USB_DETECT_PIN); // Check USB state from ESP32-C6
+}
+
+// Function to handle power down during suspend
+void suspend_power_down(void) {
+    gpio_set_direction(ENCODER_A, GPIO_MODE_INPUT); // Disable pull-ups
+    gpio_set_direction(ENCODER_B, GPIO_MODE_INPUT);
+}
+
+// Function to process custom keycodes
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
         uart_send_keycode(keycode); // Send keycode via UART
@@ -112,6 +149,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 
+// Function to handle RGB matrix indicators
 bool rgb_matrix_indicators_user(void) {
     handle_caps_lock_rgb(); // Handle Caps Lock RGB indicator
     handle_num_lock_rgb(); // Handle Num Lock RGB indicator
@@ -119,6 +157,7 @@ bool rgb_matrix_indicators_user(void) {
     return false; // Allow default QMK handling
 }
 
+// Function to initialize the keyboard after startup
 void keyboard_post_init_user(void) {
     rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR); // Set RGB matrix mode to solid color
     rgb_matrix_sethsv(85, 255, 128); // Set RGB color to green, full saturation, 50% brightness
@@ -128,6 +167,7 @@ void keyboard_post_init_user(void) {
     uart_init(); // Initialize UART
 }
 
+// Function to handle encoder updates
 bool encoder_update_user(uint8_t index, bool clockwise) {
     // Check the direction of the encoder rotation
     if (clockwise) {
@@ -138,6 +178,7 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
     return false; // Return false to allow further processing
 }
 
+// Keymap definitions
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT(
         KC_ESC, KC_DEL, KC_NUM_LOCK, KC_KB_MUTE, KC_NO, KC_NO, KC_NO, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12, LGUI(KC_L), 

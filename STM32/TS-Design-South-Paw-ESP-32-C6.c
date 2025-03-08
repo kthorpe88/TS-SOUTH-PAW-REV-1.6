@@ -22,6 +22,8 @@
 #define USB_DETECT_PIN GPIO19 // Define the pin to detect USB connection
 #define ENC_A_PIN GPIO11 // Updated encoder A pin
 #define ENC_B_PIN GPIO10 // Updated encoder B pin
+#define SLEEP_TIMEOUT_MS 300000 // 5 minutes
+static uint64_t last_activity = 0; // Timestamp of the last activity
 
 static const char *TAG = "ESP32-C6";
 
@@ -131,7 +133,7 @@ void configure_hid()
     ESP_LOGI(TAG, "HID initialized successfully");
 }
 
-// Task to handle UART communication
+// Task to handle UART communication and reset activity timer on keypress
 void uart_task(void *arg)
 {
     uint8_t data[128];
@@ -140,6 +142,7 @@ void uart_task(void *arg)
         int len = uart_read_bytes(UART_NUM, data, sizeof(data) - 1, pdMS_TO_TICKS(100));
         if (len > 0)
         {
+            last_activity = esp_timer_get_time() / 1000; // Reset timer on keypress
             data[len] = '\0'; // Null-terminate received data
             ESP_LOGI(TAG, "Received from RP2040: %s", data);
         }
@@ -195,6 +198,19 @@ void usb_detect_task(void *arg) {
     }
 }
 
+// Task to put the device into deep sleep if no activity is detected
+void bluetooth_sleep_task(void *arg) {
+    while (1) {
+        if (esp_timer_get_time() / 1000 - last_activity > SLEEP_TIMEOUT_MS && !gpio_get_level(USB_DETECT_PIN)) {
+            ESP_LOGI(TAG, "Entering deep sleep");
+            esp_bluedroid_disable();
+            esp_bt_controller_disable();
+            esp_deep_sleep_start(); // Wake on UART or GPIO19
+        }
+        vTaskDelay(pdMS_TO_TICKS(1000)); // Check every second
+    }
+}
+
 // Main application entry point
 void app_main()
 {
@@ -205,6 +221,9 @@ void app_main()
     configure_hid();
     xTaskCreate(uart_task, "uart_task", 2048, NULL, 10, NULL);
     xTaskCreate(usb_detect_task, "usb_detect_task", 2048, NULL, 10, NULL);
+    xTaskCreate(bluetooth_sleep_task, "bluetooth_sleep_task", 2048, NULL, 5, NULL); // Create sleep task
+    esp_sleep_enable_uart_wakeup(UART_NUM); // Enable wakeup on UART activity
+    esp_sleep_enable_ext0_wakeup(USB_DETECT_PIN, 1); // Wake on USB connect
 
     // Configure encoder pins as input
     gpio_set_direction(ENC_A_PIN, GPIO_MODE_INPUT);

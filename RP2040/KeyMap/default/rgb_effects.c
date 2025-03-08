@@ -13,6 +13,10 @@
 #define ESC_RIPPLE_COLOR_GREEN 0
 #define ESC_RIPPLE_COLOR_BLUE 0 // Red for ESC ripple effect
 
+#define RGB_MATRIX_TIMEOUT 300000 // 5 minutes
+#define RGB_MATRIX_SLEEP // Enable sleep mode
+#define RGB_LOW_BATTERY_THRESHOLD 20 // Percentage
+
 // Ripple effect variables for ESC
 static bool is_esc_active = false; // ESC ripple effect active flag
 static uint8_t ripple_step = 0; // Current ripple step
@@ -135,4 +139,16 @@ uint8_t read_battery_level(void) {
     uint32_t adc_reading = analogRead(BATTERY_LEVEL_PIN);
     uint8_t battery_percentage = (adc_reading * 100) / 4095; // Adjust if necessary
     return battery_percentage;
+}
+
+void keyboard_post_init_user(void) {
+    rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+    rgb_matrix_sethsv(85, 255, 128); // Default green
+}
+
+void indicate_battery_level(void) {
+    uint8_t battery_level = read_battery_level();
+    if (battery_level <= RGB_LOW_BATTERY_THRESHOLD) {
+        rgb_matrix_set_val(60); // Dim to 60/255 when battery low
+    }
 }
