@@ -82,15 +82,42 @@ void indicate_battery_level(void) {
     }
 }
 
+// Function to send commands to ESP32-C6 via UART
+void send_command_to_esp32(char command) {
+    uart_send_keycode(command);
+}
+
 // Function to handle power management
 void handle_power_management(void) {
     uint8_t battery_level = read_battery_level();
     if (battery_level < BATTERY_CHARGING_THRESHOLD) {
         // Enable charging mode
         gpio_set_level(BATTERY_CHARGING_PIN, 1);
+        send_command_to_esp32('S'); // Send sleep command to ESP32-C6
     } else {
         // Disable charging mode
         gpio_set_level(BATTERY_CHARGING_PIN, 0);
+        send_command_to_esp32('W'); // Send wake command to ESP32-C6
+    }
+}
+
+// Function to handle UART communication with ESP32-C6
+void handle_uart_communication() {
+    uint8_t data;
+    int len = uart_read_bytes(UART_NUM, &data, 1, pdMS_TO_TICKS(100));
+    if (len > 0) {
+        // Process received data from ESP32-C6
+        switch (data) {
+            case 'W': // Wired mode
+                rgb_matrix_set_color_all(0, 0, 255); // Set RGB to blue for wired mode
+                break;
+            case 'B': // Wireless mode
+                rgb_matrix_set_color_all(0, 255, 0); // Set RGB to green for wireless mode
+                break;
+            default:
+                ESP_LOGI("RP2040", "Received unknown command: 0x%02X", data);
+                break;
+        }
     }
 }
 
@@ -108,6 +135,7 @@ void matrix_scan_user(void) {
         suspend_wakeup_init(); // Wake from suspend
     }
     handle_power_management(); // Handle power management
+    handle_uart_communication(); // Handle UART communication with ESP32-C6
 }
 
 // Function to handle power down during suspend

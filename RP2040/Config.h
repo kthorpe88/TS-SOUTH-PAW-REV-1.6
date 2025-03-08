@@ -135,6 +135,10 @@
     #define RGB_MATRIX_SCROLL_LOCK_COLOR {0, 0, 255} // Blue color for Scroll Lock
 #endif // RGB_MATRIX_ENABLE 
 
+// UART configuration for RP2040
+#define UART_TX_PIN GPIO29 // Define the TX pin for UART
+#define UART_RX_PIN GPIO30 // Define the RX pin for UART
+
 // Battery charging configurations
 #ifdef BATTERY_CHARGING_ENABLE
     // Battery charging configuration for dual MCU setup

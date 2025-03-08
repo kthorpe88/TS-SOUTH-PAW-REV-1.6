@@ -30,6 +30,7 @@ static const char *TAG = "ESP32-C6";
 
 // Function to configure UART
 void configure_uart() {
+    // Configure UART parameters
     uart_config_t uart_config = {
         .baud_rate = BAUD_RATE,
         .data_bits = UART_DATA_8_BITS,
@@ -37,14 +38,17 @@ void configure_uart() {
         .stop_bits = UART_STOP_BITS_1,
         .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
     };
+    // Apply UART configuration
     if (uart_param_config(UART_NUM, &uart_config) != ESP_OK) {
         ESP_LOGE(TAG, "UART configuration failed");
         return;
     }
+    // Set UART pins
     if (uart_set_pin(UART_NUM, TXD_PIN, RXD_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE) != ESP_OK) {
         ESP_LOGE(TAG, "UART pin setup failed");
         return;
     }
+    // Install UART driver
     if (uart_driver_install(UART_NUM, 1024, 0, 0, NULL, 0) != ESP_OK) {
         ESP_LOGE(TAG, "UART driver installation failed");
         return;
@@ -60,27 +64,33 @@ void bluetooth_event_handler(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t 
 void configure_bluetooth() {
     esp_err_t ret;
     esp_bt_controller_config_t bt_cfg = BT_CONTROLLER_INIT_CONFIG_DEFAULT();
+    // Initialize Bluetooth controller
     ret = esp_bt_controller_init(&bt_cfg);
     if (ret) {
         ESP_LOGE(TAG, "Bluetooth controller initialization failed: %d", ret);
         return;
     }
+    // Enable Bluetooth
     ret = esp_bt_controller_enable(ESP_BT_MODE_CLASSIC_BT);
     if (ret) {
         ESP_LOGE(TAG, "Bluetooth enable failed: %d", ret);
         return;
     }
+    // Initialize Bluedroid stack
     ret = esp_bluedroid_init();
     if (ret) {
         ESP_LOGE(TAG, "Bluedroid initialization failed: %d", ret);
         return;
     }
+    // Enable Bluedroid stack
     ret = esp_bluedroid_enable();
     if (ret) {
         ESP_LOGE(TAG, "Bluedroid enable failed: %d", ret);
         return;
     }
+    // Set Bluetooth device name
     esp_bt_dev_set_device_name("TS-South-Paw");
+    // Register Bluetooth event callback
     esp_bt_gap_register_callback(bluetooth_event_handler);
     ESP_LOGI(TAG, "Bluetooth initialized successfully");
 }
@@ -105,25 +115,25 @@ void configure_hid() {
         .event_cb = hid_event_callback,
         .report_cb = NULL,
     };
-
+    // Register HID callbacks
     esp_err_t ret = esp_hid_device_register_callbacks(&callbacks);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "HID callback registration failed: %d", ret);
         return;
     }
-
+    // Initialize HID device
     ret = esp_hid_device_init(&hid_dev);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "HID device initialization failed: %d", ret);
         return;
     }
-
+    // Start HID services
     ret = esp_hid_device_start_services(hid_dev);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "HID service start failed: %d", ret);
         return;
     }
-
+    // Set HID device name
     esp_hid_device_set_device_name("TS-South-Paw");
     ESP_LOGI(TAG, "HID initialized successfully");
 }
@@ -132,10 +142,12 @@ void configure_hid() {
 void uart_task(void *arg) {
     uint8_t data;
     while (1) {
+        // Read data from UART
         int len = uart_read_bytes(UART_NUM, &data, 1, pdMS_TO_TICKS(100));
         if (len > 0) {
             last_activity = esp_timer_get_time() / 1000; // Reset timer on keypress
             ESP_LOGI(TAG, "Received keycode: 0x%02X", data);
+            // Send HID report
             uint8_t report[] = {0x00, 0x00, data, 0x00, 0x00, 0x00, 0x00, 0x00};
             esp_hid_device_send_report(hid_dev, ESP_HIDD_REPORT_ID_KEYBOARD, report, sizeof(report));
             report[2] = 0x00; // Release key
@@ -203,6 +215,7 @@ void usb_detect_task(void *arg) {
                 if (esp_bt_controller_get_status() == ESP_BT_CONTROLLER_STATUS_ENABLED) {
                     esp_bt_controller_disable();
                 }
+                uart_write_bytes(UART_NUM, "W", 1); // Send wired mode status to RP2040
             } else {
                 ESP_LOGI(TAG, "USB disconnected, enabling Bluetooth.");
                 if (esp_bt_controller_get_status() == ESP_BT_CONTROLLER_STATUS_IDLE) {
@@ -211,6 +224,7 @@ void usb_detect_task(void *arg) {
                 if (esp_bluedroid_get_status() == ESP_BLUEDROID_STATUS_UNINITIALIZED) {
                     esp_bluedroid_enable();
                 }
+                uart_write_bytes(UART_NUM, "B", 1); // Send wireless mode status to RP2040
             }
             stable_count = 0;
         }
@@ -239,6 +253,28 @@ void bluetooth_sleep_task(void *arg) {
         esp_bluedroid_disable();
         esp_bt_controller_disable();
         esp_deep_sleep_start();
+    }
+}
+
+// Function to handle UART communication with RP2040
+void handle_uart_communication() {
+    uint8_t data;
+    int len = uart_read_bytes(UART_NUM, &data, 1, pdMS_TO_TICKS(100));
+    if (len > 0) {
+        // Process received data from RP2040
+        switch (data) {
+            case 'S': // Sleep command
+                ESP_LOGI(TAG, "Received sleep command from RP2040");
+                esp_deep_sleep_start();
+                break;
+            case 'W': // Wake command
+                ESP_LOGI(TAG, "Received wake command from RP2040");
+                // Handle wake-up logic if needed
+                break;
+            default:
+                ESP_LOGI(TAG, "Received unknown command: 0x%02X", data);
+                break;
+        }
     }
 }
 
@@ -274,6 +310,7 @@ void app_main() {
     while (1) {
         ESP_LOGI(TAG, "ESP32-C6 Running...");
         handle_power_management(); // Handle power management
+        handle_uart_communication(); // Handle UART communication with RP2040
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
