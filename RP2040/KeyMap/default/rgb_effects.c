@@ -44,10 +44,6 @@ const uint8_t ripple_layers = sizeof(esc_splash_ripple) / sizeof(esc_splash_ripp
     // RP2040 specific RGB configurations
 #endif
 
-#ifdef ESP32_C6
-    // ESP32-C6 specific RGB configurations
-#endif
-
 #ifdef BLUETOOTH_ENABLE
     // Bluetooth specific RGB configurations
 #endif

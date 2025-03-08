@@ -8,7 +8,9 @@ RGB key switch lighting,
 Dual MCU - RP-2040 & ESP-32-C6,
 Wireless/Bluetooth,
 USB-C,
-ON-Board LIPO.
+ON-Board LIPO,
+Power Management,
+Battery Charging.
 
 // Maintainer and hardware information
 * Keyboard Maintainer: (TS Design Works LLC)

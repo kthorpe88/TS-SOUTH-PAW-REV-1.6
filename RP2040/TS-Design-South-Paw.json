@@ -14,7 +14,9 @@
         "console": false,
         "extrakey": true,
         "mousekey": false,
-        "nkro": false
+        "nkro": false,
+        "power_management": true, // New feature
+        "battery_charging": true // New feature
     },
     "qmk": {
         "locking": {
@@ -32,10 +34,6 @@
     "diode_direction": "COL2ROW",
     "processor": "RP2040",
     "bootloader": "rp2040-uf2",
-    "encoder_pins": {
-        "encoder_A": "GPIO11",
-        "encoder_B": "GPIO10"
-    },
     "usb_pins": {
         "USBN": "USB_DM",
         "USBP": "USB_DP"

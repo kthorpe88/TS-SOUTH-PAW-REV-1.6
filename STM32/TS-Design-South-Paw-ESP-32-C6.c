@@ -20,10 +20,11 @@
 #define RXD_PIN GPIO0  // Updated RXD pin for RP2040
 #define BAUD_RATE 115200
 #define USB_DETECT_PIN GPIO19 // Define the pin to detect USB connection
-#define ENC_A_PIN GPIO11 // Updated encoder A pin
-#define ENC_B_PIN GPIO10 // Updated encoder B pin
+#define ENC_A_PIN GPIO11 // Encoder A pin
+#define ENC_B_PIN GPIO10 // Encoder B pin
 #define SLEEP_TIMEOUT_MS 300000 // 5 minutes
 static uint64_t last_activity = 0; // Timestamp of the last activity
+static esp_hidd_dev_t *hid_dev; // Global HID device handle
 
 static const char *TAG = "ESP32-C6";
 
@@ -51,14 +52,12 @@ void configure_uart() {
 }
 
 // Bluetooth event handler
-void bluetooth_event_handler(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param)
-{
+void bluetooth_event_handler(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param) {
     ESP_LOGI(TAG, "Bluetooth event received: %d", event);
 }
 
 // Function to configure Bluetooth
-void configure_bluetooth()
-{
+void configure_bluetooth() {
     esp_err_t ret;
     esp_bt_controller_config_t bt_cfg = BT_CONTROLLER_INIT_CONFIG_DEFAULT();
     ret = esp_bt_controller_init(&bt_cfg);
@@ -81,31 +80,27 @@ void configure_bluetooth()
         ESP_LOGE(TAG, "Bluedroid enable failed: %d", ret);
         return;
     }
-    esp_bt_dev_set_device_name("ESP32-C6 Keyboard");
+    esp_bt_dev_set_device_name("TS-South-Paw");
     esp_bt_gap_register_callback(bluetooth_event_handler);
     ESP_LOGI(TAG, "Bluetooth initialized successfully");
 }
 
 // HID event callback
-void hid_event_callback(esp_hidd_cb_event_t event, esp_hidd_cb_param_t *param)
-{
-    switch (event)
-    {
-    case ESP_HIDD_EVENT_BLE_CONNECT:
-        ESP_LOGI(TAG, "HID connected");
-        break;
-    case ESP_HIDD_EVENT_BLE_DISCONNECT:
-        ESP_LOGI(TAG, "HID disconnected");
-        break;
-    default:
-        break;
+void hid_event_callback(esp_hidd_cb_event_t event, esp_hidd_cb_param_t *param) {
+    switch (event) {
+        case ESP_HIDD_EVENT_BLE_CONNECT:
+            ESP_LOGI(TAG, "HID connected");
+            break;
+        case ESP_HIDD_EVENT_BLE_DISCONNECT:
+            ESP_LOGI(TAG, "HID disconnected");
+            break;
+        default:
+            break;
     }
 }
 
 // Function to configure HID
-void configure_hid()
-{
-    esp_hidd_dev_t *hid_dev;
+void configure_hid() {
     esp_hidd_callbacks_t callbacks = {
         .event_cb = hid_event_callback,
         .report_cb = NULL,
@@ -129,34 +124,60 @@ void configure_hid()
         return;
     }
 
-    esp_hid_device_set_device_name("ESP32-C6 Keyboard");
+    esp_hid_device_set_device_name("TS-South-Paw");
     ESP_LOGI(TAG, "HID initialized successfully");
 }
 
 // Task to handle UART communication and reset activity timer on keypress
-void uart_task(void *arg)
-{
-    uint8_t data[128];
-    while (1)
-    {
-        int len = uart_read_bytes(UART_NUM, data, sizeof(data) - 1, pdMS_TO_TICKS(100));
-        if (len > 0)
-        {
+void uart_task(void *arg) {
+    uint8_t data;
+    while (1) {
+        int len = uart_read_bytes(UART_NUM, &data, 1, pdMS_TO_TICKS(100));
+        if (len > 0) {
             last_activity = esp_timer_get_time() / 1000; // Reset timer on keypress
-            data[len] = '\0'; // Null-terminate received data
-            ESP_LOGI(TAG, "Received from RP2040: %s", data);
+            ESP_LOGI(TAG, "Received keycode: 0x%02X", data);
+            uint8_t report[] = {0x00, 0x00, data, 0x00, 0x00, 0x00, 0x00, 0x00};
+            esp_hid_device_send_report(hid_dev, ESP_HIDD_REPORT_ID_KEYBOARD, report, sizeof(report));
+            report[2] = 0x00; // Release key
+            esp_hid_device_send_report(hid_dev, ESP_HIDD_REPORT_ID_KEYBOARD, report, sizeof(report));
         }
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
 
-// Function to send keypress to Bluetooth
-void send_keypress_to_bt(uint8_t keycode)
-{
-    char message[16];
-    snprintf(message, sizeof(message), "KEY:%02X", keycode);
-    uart_write_bytes(UART_NUM, message, strlen(message));
-    ESP_LOGI(TAG, "Sent keypress: %s", message);
+// Encoder task
+void encoder_task(void *arg) {
+    static int8_t last_a_state = 0;
+    static int8_t last_b_state = 0;
+    gpio_set_direction(ENC_A_PIN, GPIO_MODE_INPUT);
+    gpio_set_direction(ENC_B_PIN, GPIO_MODE_INPUT);
+    last_a_state = gpio_get_level(ENC_A_PIN);
+    last_b_state = gpio_get_level(ENC_B_PIN);
+
+    while (1) {
+        int8_t a_state = gpio_get_level(ENC_A_PIN);
+        int8_t b_state = gpio_get_level(ENC_B_PIN);
+
+        if (a_state != last_a_state) { // Detect change on A pin
+            if (b_state != a_state) {  // Clockwise
+                ESP_LOGI(TAG, "Encoder: Clockwise (Volume Up)");
+                uint8_t report[] = {0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00}; // KC_VOLU
+                esp_hid_device_send_report(hid_dev, ESP_HIDD_REPORT_ID_KEYBOARD, report, sizeof(report));
+                report[2] = 0x00; // Release key
+                esp_hid_device_send_report(hid_dev, ESP_HIDD_REPORT_ID_KEYBOARD, report, sizeof(report));
+            } else {                   // Counterclockwise
+                ESP_LOGI(TAG, "Encoder: Counterclockwise (Volume Down)");
+                uint8_t report[] = {0x00, 0x00, 0x81, 0x00, 0x00, 0x00, 0x00, 0x00}; // KC_VOLD
+                esp_hid_device_send_report(hid_dev, ESP_HIDD_REPORT_ID_KEYBOARD, report, sizeof(report));
+                report[2] = 0x00; // Release key
+                esp_hid_device_send_report(hid_dev, ESP_HIDD_REPORT_ID_KEYBOARD, report, sizeof(report));
+            }
+            last_activity = esp_timer_get_time() / 1000; // Reset sleep timer
+        }
+        last_a_state = a_state;
+        last_b_state = b_state;
+        vTaskDelay(pdMS_TO_TICKS(10)); // Debounce delay
+    }
 }
 
 // Task to detect USB connection and manage Bluetooth state
@@ -173,7 +194,7 @@ void usb_detect_task(void *arg) {
             stable_count = 0;
         }
 
-        if (stable_count >= 5) { // stable for 5 checks (~2.5 seconds debounce)
+        if (stable_count >= 5) { // Stable for 5 checks (~2.5 seconds debounce)
             if (current_state) {
                 ESP_LOGI(TAG, "USB connected, disabling Bluetooth.");
                 if (esp_bluedroid_get_status() == ESP_BLUEDROID_STATUS_ENABLED) {
@@ -200,38 +221,59 @@ void usb_detect_task(void *arg) {
 
 // Task to put the device into deep sleep if no activity is detected
 void bluetooth_sleep_task(void *arg) {
+    uint8_t buffer[5];
     while (1) {
         if (esp_timer_get_time() / 1000 - last_activity > SLEEP_TIMEOUT_MS && !gpio_get_level(USB_DETECT_PIN)) {
-            ESP_LOGI(TAG, "Entering deep sleep");
-            esp_bluedroid_disable();
-            esp_bt_controller_disable();
-            esp_deep_sleep_start(); // Wake on UART or GPIO19
+            ESP_LOGI(TAG, "Entering deep sleep due to timeout");
+            goto sleep;
         }
-        vTaskDelay(pdMS_TO_TICKS(1000)); // Check every second
+        int len = uart_read_bytes(UART_NUM, buffer, 5, pdMS_TO_TICKS(100));
+        if (len == 5 && memcmp(buffer, "SLEEP", 5) == 0) {
+            ESP_LOGI(TAG, "Entering deep sleep due to RP2040 signal");
+            goto sleep;
+        }
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        continue;
+
+    sleep:
+        esp_bluedroid_disable();
+        esp_bt_controller_disable();
+        esp_deep_sleep_start();
+    }
+}
+
+// Function to handle power management
+void handle_power_management() {
+    // Check battery level and manage power accordingly
+    uint8_t battery_level = read_battery_level();
+    if (battery_level < BATTERY_CHARGING_THRESHOLD) {
+        ESP_LOGI(TAG, "Battery level low, enabling charging mode");
+        // Enable charging mode
+        gpio_set_level(BATTERY_CHARGING_PIN, 1);
+    } else {
+        ESP_LOGI(TAG, "Battery level sufficient, disabling charging mode");
+        // Disable charging mode
+        gpio_set_level(BATTERY_CHARGING_PIN, 0);
     }
 }
 
 // Main application entry point
-void app_main()
-{
+void app_main() {
     ESP_LOGI(TAG, "Starting ESP32-C6 Firmware");
 
-    configure_uart();
-    configure_bluetooth();
-    configure_hid();
-    xTaskCreate(uart_task, "uart_task", 2048, NULL, 10, NULL);
-    xTaskCreate(usb_detect_task, "usb_detect_task", 2048, NULL, 10, NULL);
+    configure_uart(); // Initialize UART
+    configure_bluetooth(); // Initialize Bluetooth
+    configure_hid(); // Initialize HID
+    xTaskCreate(uart_task, "uart_task", 2048, NULL, 10, NULL); // Create UART task
+    xTaskCreate(encoder_task, "encoder_task", 2048, NULL, 10, NULL); // Create encoder task
+    xTaskCreate(usb_detect_task, "usb_detect_task", 2048, NULL, 10, NULL); // Create USB detection task
     xTaskCreate(bluetooth_sleep_task, "bluetooth_sleep_task", 2048, NULL, 5, NULL); // Create sleep task
     esp_sleep_enable_uart_wakeup(UART_NUM); // Enable wakeup on UART activity
     esp_sleep_enable_ext0_wakeup(USB_DETECT_PIN, 1); // Wake on USB connect
 
-    // Configure encoder pins as input
-    gpio_set_direction(ENC_A_PIN, GPIO_MODE_INPUT);
-    gpio_set_direction(ENC_B_PIN, GPIO_MODE_INPUT);
-
-    while (1)
-    {
+    while (1) {
         ESP_LOGI(TAG, "ESP32-C6 Running...");
+        handle_power_management(); // Handle power management
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }

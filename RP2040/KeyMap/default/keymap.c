@@ -82,11 +82,22 @@ void indicate_battery_level(void) {
     }
 }
 
+// Function to handle power management
+void handle_power_management(void) {
+    uint8_t battery_level = read_battery_level();
+    if (battery_level < BATTERY_CHARGING_THRESHOLD) {
+        // Enable charging mode
+        gpio_set_level(BATTERY_CHARGING_PIN, 1);
+    } else {
+        // Disable charging mode
+        gpio_set_level(BATTERY_CHARGING_PIN, 0);
+    }
+}
+
 // Function to scan the matrix and handle sleep mode and USB connection
 void matrix_scan_user(void) {
-    // Check if the sleep timeout has been reached and USB is not connected
-    if (timer_elapsed32(sleep_timer) > SLEEP_TIMEOUT && !usb_connected()) {
-        // Enter sleep mode
+    // Check if the sleep timeout has been reached
+    if (timer_elapsed32(sleep_timer) > SLEEP_TIMEOUT) {
         rgb_matrix_disable(); // Turn off LEDs
         suspend_power_down(); // QMK suspend function
     }
@@ -96,22 +107,12 @@ void matrix_scan_user(void) {
         rgb_matrix_enable(); // Wake LEDs
         suspend_wakeup_init(); // Wake from suspend
     }
-
-    // Adjust RGB matrix brightness when connected via USB
-    if (usb_connected()) {
-        rgb_matrix_set_val(80); // Lower brightness in wired mode
-    }
-}
-
-// Function to check if USB is connected
-bool usb_connected(void) {
-    return gpio_get_level(USB_DETECT_PIN); // Check USB state from ESP32-C6
+    handle_power_management(); // Handle power management
 }
 
 // Function to handle power down during suspend
 void suspend_power_down(void) {
-    gpio_set_direction(ENCODER_A, GPIO_MODE_INPUT); // Disable pull-ups
-    gpio_set_direction(ENCODER_B, GPIO_MODE_INPUT);
+    // No encoder pins to disable
 }
 
 // Function to process custom keycodes
@@ -157,25 +158,25 @@ bool rgb_matrix_indicators_user(void) {
     return false; // Allow default QMK handling
 }
 
+#ifdef RP2040
+void rp2040_specific_init(void) {
+    // Add RP2040-specific initialization code here
+    // Example: Initialize additional GPIO pins
+    gpio_init(PICO_DEFAULT_LED_PIN);
+    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
+    gpio_put(PICO_DEFAULT_LED_PIN, 1); // Turn on the LED
+}
+#endif
+
 // Function to initialize the keyboard after startup
 void keyboard_post_init_user(void) {
     rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR); // Set RGB matrix mode to solid color
     rgb_matrix_sethsv(85, 255, 128); // Set RGB color to green, full saturation, 50% brightness
-    // rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR); // Set mode without writing to EEPROM
-    rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR); // Write the mode to EEPROM
-
     uart_init(); // Initialize UART
-}
 
-// Function to handle encoder updates
-bool encoder_update_user(uint8_t index, bool clockwise) {
-    // Check the direction of the encoder rotation
-    if (clockwise) {
-        tap_code(KC_VOLU); // Volume up
-    } else {
-        tap_code(KC_VOLD); // Volume down
-    }
-    return false; // Return false to allow further processing
+    #ifdef RP2040
+    rp2040_specific_init(); // Call RP2040-specific initialization
+    #endif
 }
 
 // Keymap definitions
@@ -186,7 +187,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_P7, KC_P8, KC_P9, KC_PPLS, DM_PLY3, DM_PLY4, KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_LBRC, KC_RBRC, KC_BSLS,      
         KC_P4, KC_P5, KC_P6, KC_NO, KC_CALC, KC_PSCR, KC_CAPS, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_QUOT, KC_NO, KC_ENT,                 
         KC_P1, KC_P2, KC_P3, KC_PENT, KC_NO, KC_UP, KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_NO, KC_NO, KC_RSFT,                        
-        KC_NO, KC_P0, KC_PDOT, KC_NO, KC_LEFT, KC_DOWN, KC_RIGHT, KC_LCTL, KC_LALT, KC_NO, KC_NO, KC_NO, KC_SPC, KC_NO, KC_NO, KC_NO, KC_RALT, KC_RGUI, MO (FN), KC_RCTL
+        KC_NO, KC_P0, KC_PDOT, KC_NO, KC_LEFT, KC_DOWN, KC_RIGHT, KC_LCTL, KC_LALT, KC_NO, KC_NO, KC_NO, KC_SPC, KC_NO, KC_NO, KC_NO, KC_RALT, KC_RGUI, MO(FN), KC_RCTL
     ),
     [FN] = LAYOUT(
         RESET,   _______, _______, _______, KC_NO  , KC_NO  , KC_NO  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_BATT_LVL,
@@ -200,10 +201,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 #ifdef RP2040
     // RP2040 specific keymap configurations
-#endif
-
-#ifdef ESP32_C6
-    // ESP32-C6 specific keymap configurations
 #endif
 
 #ifdef BLUETOOTH_ENABLE
