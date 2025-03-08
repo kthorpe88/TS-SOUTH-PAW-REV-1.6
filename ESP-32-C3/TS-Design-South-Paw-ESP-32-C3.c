@@ -19,6 +19,7 @@
 #define TXD_PIN GPIO17
 #define RXD_PIN GPIO16
 #define BAUD_RATE 115200
+#define USB_DETECT_PIN GPIO19 // Define the pin to detect USB connection
 
 static const char *TAG = "ESP32-C6";
 
@@ -30,9 +31,18 @@ void configure_uart()
         .parity = UART_PARITY_DISABLE,
         .stop_bits = UART_STOP_BITS_1,
         .flow_ctrl = UART_HW_FLOWCTRL_DISABLE};
-    uart_param_config(UART_NUM, &uart_config);
-    uart_set_pin(UART_NUM, TXD_PIN, RXD_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
-    uart_driver_install(UART_NUM, 1024, 0, 0, NULL, 0);
+    if (uart_param_config(UART_NUM, &uart_config) != ESP_OK) {
+        ESP_LOGE(TAG, "UART parameter configuration failed");
+        return;
+    }
+    if (uart_set_pin(UART_NUM, TXD_PIN, RXD_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE) != ESP_OK) {
+        ESP_LOGE(TAG, "UART set pin failed");
+        return;
+    }
+    if (uart_driver_install(UART_NUM, 1024, 0, 0, NULL, 0) != ESP_OK) {
+        ESP_LOGE(TAG, "UART driver install failed");
+        return;
+    }
 }
 
 void bluetooth_event_handler(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param)
@@ -122,6 +132,30 @@ void send_keypress_to_bt(uint8_t keycode)
     ESP_LOGI(TAG, "Sent keypress: %s", message);
 }
 
+void usb_detect_task(void *arg)
+{
+    gpio_set_direction(USB_DETECT_PIN, GPIO_MODE_INPUT);
+    while (1)
+    {
+        int usb_connected = gpio_get_level(USB_DETECT_PIN);
+        if (usb_connected)
+        {
+            ESP_LOGI(TAG, "USB connected, switching to wired mode");
+            // Disable Bluetooth and HID
+            esp_bluedroid_disable();
+            esp_bt_controller_disable();
+        }
+        else
+        {
+            ESP_LOGI(TAG, "USB disconnected, switching to wireless mode");
+            // Enable Bluetooth and HID
+            esp_bt_controller_enable(ESP_BT_MODE_CLASSIC_BT);
+            esp_bluedroid_enable();
+        }
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
 void app_main()
 {
     ESP_LOGI(TAG, "Starting ESP32-C6 Firmware");
@@ -130,6 +164,7 @@ void app_main()
     configure_bluetooth();
     configure_hid();
     xTaskCreate(uart_task, "uart_task", 2048, NULL, 10, NULL);
+    xTaskCreate(usb_detect_task, "usb_detect_task", 2048, NULL, 10, NULL);
 
     while (1)
     {
