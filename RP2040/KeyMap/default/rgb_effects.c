@@ -16,6 +16,7 @@
 #define RGB_MATRIX_TIMEOUT 300000 // 5 minutes
 #define RGB_MATRIX_SLEEP // Enable sleep mode
 #define RGB_LOW_BATTERY_THRESHOLD 20 // Percentage
+#define BATTERY_LEVEL_LEDS {17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6} // LEDs for battery level indication
 
 // Ripple effect variables for ESC
 static bool is_esc_active = false; // ESC ripple effect active flag
@@ -42,14 +43,6 @@ const uint8_t ripple_layers = sizeof(esc_splash_ripple) / sizeof(esc_splash_ripp
 
 #ifdef RP2040
     // RP2040 specific RGB configurations
-#endif
-
-#ifdef BLUETOOTH_ENABLE
-    // Bluetooth specific RGB configurations
-#endif
-
-#ifdef BATTERY_CHARGING_ENABLE
-    // Battery charging specific RGB configurations
 #endif
 
 // Function to handle Caps Lock RGB lighting
@@ -144,6 +137,18 @@ void keyboard_post_init_user(void) {
 
 void indicate_battery_level(void) {
     uint8_t battery_level = read_battery_level();
+    uint8_t battery_leds[] = BATTERY_LEVEL_LEDS;
+    uint8_t num_leds = sizeof(battery_leds) / sizeof(battery_leds[0]);
+    uint8_t leds_to_light = (battery_level * num_leds) / 100;
+
+    for (uint8_t i = 0; i < num_leds; i++) {
+        if (i < leds_to_light) {
+            rgb_matrix_set_color(battery_leds[i], 0, 255, 0); // Green for battery level
+        } else {
+            rgb_matrix_set_color(battery_leds[i], 0, 0, 0); // Turn off remaining LEDs
+        }
+    }
+
     if (battery_level <= RGB_LOW_BATTERY_THRESHOLD) {
         rgb_matrix_set_val(60); // Dim to 60/255 when battery low
     }

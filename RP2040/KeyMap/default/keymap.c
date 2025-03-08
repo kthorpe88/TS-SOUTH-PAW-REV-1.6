@@ -230,11 +230,3 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #ifdef RP2040
     // RP2040 specific keymap configurations
 #endif
-
-#ifdef BLUETOOTH_ENABLE
-    // Bluetooth specific keymap configurations
-#endif
-
-#ifdef BATTERY_CHARGING_ENABLE
-    // Battery charging specific keymap configurations
-#endif

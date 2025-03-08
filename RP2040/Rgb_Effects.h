@@ -27,31 +27,6 @@ extern bool is_battery_charging;
 // USB connection status
 extern bool is_usb_connected;
 
-// Bluetooth status variables
-extern bool is_bt_enabled;
-extern bool is_bt_connected;
-extern bool is_bt_pairing;
-extern bool is_bt_disconnected;
-extern bool is_bt_disabled;
-extern bool is_bt_unpairing;
-extern bool is_bt_pairing_failed;
-extern bool is_bt_unpairing_failed;
-extern bool is_bt_disconnection_failed;
-extern bool is_bt_connection_failed;
-extern bool is_bt_enable_failed;
-extern bool is_bt_disable_failed;
-extern bool is_bt_init_failed;
-extern bool is_bt_controller_enable_failed;
-extern bool is_bt_controller_disable_failed;
-extern bool is_bluedroid_enable_failed;
-extern bool is_bluedroid_disable_failed;
-extern bool is_hid_device_init_failed;
-extern bool is_hid_device_register_callbacks_failed;
-extern bool is_hid_device_set_device_name_failed;
-extern bool is_hid_device_start_failed;
-extern bool is_hid_device_stop_failed;
-extern bool is_hid_device_send_report_failed;
-
 // LED indices for Caps Lock, Num Lock, and ripple effects
 #define CAPS_LOCK_LED 60 // LED index for Caps Lock
 #define NUM_LOCK_LED 3 // LED index for Num Lock
