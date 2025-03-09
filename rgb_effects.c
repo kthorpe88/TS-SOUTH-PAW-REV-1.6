@@ -14,8 +14,6 @@
 #define ESC_RIPPLE_COLOR_BLUE 0 // Red for ESC ripple effect
 
 #define RGB_MATRIX_SLEEP // Enable sleep mode
-#define RGB_LOW_BATTERY_THRESHOLD 20 // Percentage
-#define BATTERY_LEVEL_LEDS {17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6} // LEDs for battery level indication
 
 // Ripple effect variables for ESC
 extern bool is_esc_active; // ESC ripple effect active flag
@@ -122,48 +120,9 @@ void handle_esc_ripple_effect(void) {
     }
 }
 
-// Function to read the battery level
-uint8_t read_battery_level(void) {
-    uint32_t adc_reading = analogRead(BATTERY_LEVEL_PIN);
-    uint8_t battery_percentage = (adc_reading * 100) / 4095; // Adjust if necessary
-    return battery_percentage;
-}
-
 void keyboard_post_init_user(void) {
     rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
     rgb_matrix_sethsv(85, 255, 128); // Default green
 }
 
-void indicate_battery_level(void) {
-    uint8_t battery_level = read_battery_level();
-    uint8_t battery_leds[] = BATTERY_LEVEL_LEDS;
-    uint8_t num_leds = sizeof(battery_leds) / sizeof(battery_leds[0]);
-    uint8_t leds_to_light = (battery_level * num_leds) / 100;
-
-    for (uint8_t i = 0; i < num_leds; i++) {
-        if (i < leds_to_light) {
-            rgb_matrix_set_color(battery_leds[i], 0, 255, 0); // Green for battery level
-        } else {
-            rgb_matrix_set_color(battery_leds[i], 0, 0, 0); // Turn off remaining LEDs
-        }
-    }
-
-    if (battery_level <= RGB_LOW_BATTERY_THRESHOLD) {
-        rgb_matrix_set_val(60); // Dim to 60/255 when battery low
-    }
-}
-
-// Define analogRead function and BATTERY_LEVEL_PIN constant
-uint32_t analogRead(uint8_t pin) {
-    // Implement the function to read analog value from the specified pin
-    // This is a placeholder implementation
-    return 0;
-}
-
-#define BATTERY_LEVEL_PIN 0
-
-// Define rgb_matrix_set_val function
-void rgb_matrix_set_val(uint8_t val) {
-    // Implement the function to set RGB matrix value
-    // This is a placeholder implementation
-}
+// Remove battery level related functions and definitions

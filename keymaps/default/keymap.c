@@ -35,56 +35,6 @@ enum custom_keycodes {
     // ...other custom keycodes...
 };
 
-// Function to indicate battery level using RGB LEDs
-void indicate_battery_level(void) {
-    uint8_t battery_level = read_battery_level(); // Read the battery level
-    uint8_t leds_to_light = (battery_level * 12) / 100; // Calculate the number of LEDs to light up
-    static bool flash_state = false; // Flash state for low battery indication
-
-    for (uint8_t i = 0; i < 12; i++) {
-        if (i < leds_to_light) {
-            uint8_t red, green, blue;
-            if (battery_level > 50) {
-                // Fade from green to yellow to orange
-                if (i < 8) {
-                    green = 255;
-                    red = (i - 4) * 42; // Increase red from 0 to 168
-                    blue = 0;
-                } else {
-                    green = 255 - (i - 8) * 42; // Decrease green from 255 to 0
-                    red = 255;
-                    blue = 0;
-                }
-            } else {
-                // Fade from orange to red
-                if (i < 4) {
-                    green = 165 - i * 42; // Decrease green from 165 to 0
-                    red = 255;
-                    blue = 0;
-                } else {
-                    green = 0;
-                    red = 255;
-                    blue = 0;
-                }
-            }
-            rgb_matrix_set_color(i, red, green, blue); // Set LED color
-        } else {
-            rgb_matrix_set_color(i, 0, 0, 0); // Turn off the LED
-        }
-    }
-
-    if (battery_level <= 20) {
-        flash_state = !flash_state; // Toggle flash state
-        for (uint8_t i = 0; i < 4; i++) {
-            if (flash_state) {
-                rgb_matrix_set_color(i, 255, 0, 0); // Flash red for very low battery
-            } else {
-                rgb_matrix_set_color(i, 0, 0, 0); // Turn off the LED
-            }
-        }
-    }
-}
-
 // Function to send commands to ESP32-C6 via UART
 void send_command_to_esp32(char command) {
     uart_send_keycode(command);
@@ -148,11 +98,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return false;
 
             case KC_BATT_LVL:
-                indicate_battery_level(); // Indicate battery level
+                // Remove battery level indication
                 return false;
 
             case MO(FN):
-                indicate_battery_level(); // Indicate battery level when switching to FN layer
+                // Remove battery level indication when switching to FN layer
                 break;
 
             default:

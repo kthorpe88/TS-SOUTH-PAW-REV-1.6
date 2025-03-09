@@ -18,12 +18,6 @@ extern uint8_t prev_rgb_mode_num;
 extern bool is_esc_active;
 extern bool is_esc_ripple_active;
 
-// Battery status variables
-extern uint8_t battery_level;
-extern bool is_battery_low;
-extern bool is_battery_critical;
-extern bool is_battery_charging;
-
 // USB connection status
 extern bool is_usb_connected;
 
@@ -36,6 +30,5 @@ void handle_num_lock_rgb(void); // Handle Num Lock RGB effect
 void handle_esc_ripple_effect(void); // Handle ESC ripple effect
 void start_esc_ripple_effect(void); // Start ESC ripple effect
 void stop_esc_ripple_effect(void); // Stop ESC ripple effect
-uint8_t read_battery_level(void); // Function declaration for reading battery level
 
 #endif // RGB_EFFECTS_H
