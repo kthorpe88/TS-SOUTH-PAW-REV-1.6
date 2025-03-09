@@ -3,7 +3,7 @@ MCU = RP2040
 F_CPU = 133000000
 
 # Bootloader and platform
-BOOTLOADER = rp2040-uf2
+BOOTLOADER = rp2040
 PLATFORM = chibios
 
 # Manufacturer information
