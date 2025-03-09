@@ -16,8 +16,11 @@
 #include "tssouthpaw/rgb_effects.h" // Include custom RGB effects header
 #include QMK_KEYBOARD_H // Include QMK keyboard header
 #include "uart.h" // Include UART header
+#include "gpio.h" // Include GPIO header
 
 #define SLEEP_TIMEOUT 300000 // 5 minutes in milliseconds
+#define UART_NUM 0 // Define UART number
+
 static uint32_t sleep_timer = 0; // Timer to track inactivity
 
 led_config_t g_led_config = LED_CONFIG; // LED configuration
@@ -87,22 +90,8 @@ void send_command_to_esp32(char command) {
     uart_send_keycode(command);
 }
 
-// Function to handle power management
-void handle_power_management(void) {
-    uint8_t battery_level = read_battery_level();
-    if (battery_level < BATTERY_CHARGING_THRESHOLD) {
-        // Enable charging mode
-        gpio_set_level(BATTERY_CHARGING_PIN, 1);
-        send_command_to_esp32('S'); // Send sleep command to ESP32-C6
-    } else {
-        // Disable charging mode
-        gpio_set_level(BATTERY_CHARGING_PIN, 0);
-        send_command_to_esp32('W'); // Send wake command to ESP32-C6
-    }
-}
-
 // Function to handle UART communication with ESP32-C6
-void handle_uart_communication() {
+void handle_uart_communication(void) {
     uint8_t data;
     int len = uart_read_bytes(UART_NUM, &data, 1, pdMS_TO_TICKS(100));
     if (len > 0) {
@@ -134,7 +123,6 @@ void matrix_scan_user(void) {
         rgb_matrix_enable(); // Wake LEDs
         suspend_wakeup_init(); // Wake from suspend
     }
-    handle_power_management(); // Handle power management
     handle_uart_communication(); // Handle UART communication with ESP32-C6
 }
 
@@ -200,7 +188,7 @@ void rp2040_specific_init(void) {
 void keyboard_post_init_user(void) {
     rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR); // Set RGB matrix mode to solid color
     rgb_matrix_sethsv(85, 255, 128); // Set RGB color to green, full saturation, 50% brightness
-    uart_init(); // Initialize UART
+    uart_init(115200); // Initialize UART with baud rate
 
     #ifdef RP2040
     rp2040_specific_init(); // Call RP2040-specific initialization
@@ -212,7 +200,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT(
         KC_ESC, KC_DEL, KC_NUM_LOCK, KC_KB_MUTE, KC_NO, KC_NO, KC_NO, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12, LGUI(KC_L), 
         KC_BSPC, KC_PSLS, KC_PAST, KC_PMNS, DM_PLY1, DM_PLY2, KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_MINS,KC_EQL, KC_BSPC,       
-        KC_P7, KC_P8, KC_P9, KC_PPLS, DM_PLY3, DM_PLY4, KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_LBRC, KC_RBRC, KC_BSLS,      
+        KC_P7, KC_P8, KC_P9, KC_PPLS, DM_PLY1, DM_PLY2, KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_LBRC, KC_RBRC, KC_BSLS,      
         KC_P4, KC_P5, KC_P6, KC_NO, KC_CALC, KC_PSCR, KC_CAPS, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_QUOT, KC_NO, KC_ENT,                 
         KC_P1, KC_P2, KC_P3, KC_PENT, KC_NO, KC_UP, KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_NO, KC_NO, KC_RSFT,                        
         KC_NO, KC_P0, KC_PDOT, KC_NO, KC_LEFT, KC_DOWN, KC_RIGHT, KC_LCTL, KC_LALT, KC_NO, KC_NO, KC_NO, KC_SPC, KC_NO, KC_NO, KC_NO, KC_RALT, KC_RGUI, MO(FN), KC_RCTL
@@ -220,7 +208,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [FN] = LAYOUT(
         RESET,   _______, _______, _______, KC_NO  , KC_NO  , KC_NO  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_BATT_LVL,
         _______, _______, _______, _______, DM_REC1, DM_REC2, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, 
-        _______, _______, _______, _______, DM_REC3, DM_REC4, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, DM_REC1, DM_REC2, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, KC_NO  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_NO  , _______,
         _______, _______, _______, _______, KC_NO  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_NO  , KC_NO  , _______,
         KC_NO,   _______, _______, KC_NO  , _______, _______, _______, _______, _______, KC_NO  , KC_NO  , KC_NO  , _______, KC_NO  , KC_NO  , KC_NO  , _______, _______, _______, _______                      

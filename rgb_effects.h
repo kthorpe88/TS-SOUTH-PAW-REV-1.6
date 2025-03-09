@@ -38,11 +38,4 @@ void start_esc_ripple_effect(void); // Start ESC ripple effect
 void stop_esc_ripple_effect(void); // Stop ESC ripple effect
 uint8_t read_battery_level(void); // Function declaration for reading battery level
 
-// Function declarations for analogRead and rgb_matrix_set_val
-uint32_t analogRead(uint8_t pin); // Function to read analog value from the specified pin
-void rgb_matrix_set_val(uint8_t val); // Function to set RGB matrix value
-
-// Define BATTERY_LEVEL_PIN constant
-#define BATTERY_LEVEL_PIN 0
-
 #endif // RGB_EFFECTS_H
