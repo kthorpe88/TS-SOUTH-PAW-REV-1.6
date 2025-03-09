@@ -23,6 +23,8 @@
 #define ENC_A_PIN GPIO11 // Encoder A pin
 #define ENC_B_PIN GPIO10 // Encoder B pin
 #define SLEEP_TIMEOUT_MS 300000 // 5 minutes
+#define BATTERY_CHARGING_PIN GPIO35 // Example pin for battery voltage monitoring
+#define BATTERY_CHARGING_THRESHOLD 3.7 // Voltage threshold for charging
 static uint64_t last_activity = 0; // Timestamp of the last activity
 static esp_hidd_dev_t *hid_dev; // Global HID device handle
 
@@ -291,6 +293,12 @@ void handle_power_management() {
         // Disable charging mode
         gpio_set_level(BATTERY_CHARGING_PIN, 0);
     }
+}
+
+uint8_t read_battery_level(void) {
+    uint32_t adc_reading = adc1_get_raw(ADC1_CHANNEL_0); // Adjust if necessary
+    uint8_t battery_percentage = (adc_reading * 100) / 4095; // Adjust if necessary
+    return battery_percentage;
 }
 
 // Main application entry point
