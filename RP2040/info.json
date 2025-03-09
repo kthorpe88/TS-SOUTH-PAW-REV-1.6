@@ -22,7 +22,8 @@
         "locking": {
             "enabled": true,
             "resync": true
-        },
+        }
+    },
     "matrix_size": {
         "cols": 20,
         "rows": 6
@@ -36,7 +37,7 @@
     },
     "diode_direction": "COL2ROW",
     "processor": "RP2040",
-    "bootloader": "rp2040-uf2",
+    "bootloader": "rp2040",
     "usb_pins": {
         "USBN": "USB_DM",
         "USBP": "USB_DP"
