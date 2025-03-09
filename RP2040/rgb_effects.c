@@ -1,4 +1,4 @@
-#include "rgb_effects.h" // Include custom RGB effects header
+#include "tssouthpaw/rgb_effects.h" // Include custom RGB effects header
 
 // RGB values for custom lighting
 #define CAPS_LOCK_COLOR_RED 255

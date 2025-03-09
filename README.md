@@ -24,7 +24,7 @@ Battery Charging.
 ## QMK compilation example
 * QMK example for this keyboard (after setting up your build environment):
 
-      qmk compile -kb ts-south-paw-rev-1.6 -km default
+      qmk compile -kb tssouthpaw/ts-south-paw-rev-1.6 -km default
 
 ## Bootloader section
 * Must enter Bootloader mode to flash firmware.
@@ -38,7 +38,7 @@ Battery Charging.
 ### Flashing the RP2040
 * QMK example for flashing the RP2040:
 
-      qmk flash -kb ts-south-paw-rev-1.6 -km default
+      qmk flash -kb tssouthpaw/ts-south-paw-rev-1.6 -km default
 
 ### Flashing the ESP32-C6
 * Use the ESP-IDF toolchain to flash the ESP32-C6 firmware.

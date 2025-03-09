@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "tssouthpaw/qmk_keyboard.h"
+
 // Set 0 if debouncing isn't needed
 #define DEBOUNCE 3
 

@@ -21,4 +21,4 @@ RGB_MATRIX_KEYPRESSES = yes
 ENABLE_RGB_MATRIX_SOLID_REACTIVE_WIDE = yes
 
 # Source files
-SRC += rgb_effects.c
+SRC += tssouthpaw/rgb_effects.c
