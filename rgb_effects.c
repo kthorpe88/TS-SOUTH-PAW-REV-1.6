@@ -13,22 +13,21 @@
 #define ESC_RIPPLE_COLOR_GREEN 0
 #define ESC_RIPPLE_COLOR_BLUE 0 // Red for ESC ripple effect
 
-#define RGB_MATRIX_TIMEOUT 300000 // 5 minutes
 #define RGB_MATRIX_SLEEP // Enable sleep mode
 #define RGB_LOW_BATTERY_THRESHOLD 20 // Percentage
 #define BATTERY_LEVEL_LEDS {17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6} // LEDs for battery level indication
 
 // Ripple effect variables for ESC
-static bool is_esc_active = false; // ESC ripple effect active flag
+extern bool is_esc_active; // ESC ripple effect active flag
 static uint8_t ripple_step = 0; // Current ripple step
 static uint16_t ripple_timer = 0; // Timer for ripple effect
 static bool ripple_expanding = true; // Ripple expanding flag
 
 // Caps Lock and Num Lock pulsing variables
-static uint8_t prev_rgb_mode_caps = 0; // Previous RGB mode for Caps Lock
-static uint8_t prev_rgb_mode_num = 0; // Previous RGB mode for Num Lock
-static bool pulse_active_caps = false; // Caps Lock pulsing active flag
-static bool pulse_active_num = false; // Num Lock pulsing active flag
+extern uint8_t prev_rgb_mode_caps; // Previous RGB mode for Caps Lock
+extern uint8_t prev_rgb_mode_num; // Previous RGB mode for Num Lock
+extern bool pulse_active_caps; // Caps Lock pulsing active flag
+extern bool pulse_active_num; // Num Lock pulsing active flag
 
 // Ripple configuration for ESC
 const uint8_t esc_splash_ripple[][10] = {
@@ -152,4 +151,19 @@ void indicate_battery_level(void) {
     if (battery_level <= RGB_LOW_BATTERY_THRESHOLD) {
         rgb_matrix_set_val(60); // Dim to 60/255 when battery low
     }
+}
+
+// Define analogRead function and BATTERY_LEVEL_PIN constant
+uint32_t analogRead(uint8_t pin) {
+    // Implement the function to read analog value from the specified pin
+    // This is a placeholder implementation
+    return 0;
+}
+
+#define BATTERY_LEVEL_PIN 0
+
+// Define rgb_matrix_set_val function
+void rgb_matrix_set_val(uint8_t val) {
+    // Implement the function to set RGB matrix value
+    // This is a placeholder implementation
 }

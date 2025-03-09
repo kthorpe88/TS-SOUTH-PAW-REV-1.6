@@ -27,8 +27,7 @@ extern bool is_battery_charging;
 // USB connection status
 extern bool is_usb_connected;
 
-// LED indices for Caps Lock, Num Lock, and ripple effects
-#define CAPS_LOCK_LED 60 // LED index for Caps Lock
+// LED indices for Num Lock and ripple effects
 #define NUM_LOCK_LED 3 // LED index for Num Lock
 
 // Function declarations for handling RGB effects

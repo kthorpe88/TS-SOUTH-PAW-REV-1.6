@@ -126,10 +126,10 @@
     }
 
     // RGB-related constants
-    #define CAPS_LOCK_LED 1
-    #define ESC_RIPPLE_COLOR_RED 255
-    #define ESC_RIPPLE_COLOR_GREEN 0
-    #define ESC_RIPPLE_COLOR_BLUE 0
+    #define CAPS_LOCK_LED 60 // LED index for Caps Lock
+    #define ESC_RIPPLE_COLOR_RED 255 // Red color for ESC ripple effect
+    #define ESC_RIPPLE_COLOR_GREEN 0 // Green color for ESC ripple effect
+    #define ESC_RIPPLE_COLOR_BLUE 0 // Blue color for ESC ripple effect
     #define RGB_MATRIX_CAPS_LOCK_COLOR {255, 0, 0} // Red color for Caps Lock
     #define RGB_MATRIX_NUM_LOCK_COLOR {0, 255, 0} // Green color for Num Lock
     #define RGB_MATRIX_SCROLL_LOCK_COLOR {0, 0, 255} // Blue color for Scroll Lock
