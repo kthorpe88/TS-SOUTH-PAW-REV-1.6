@@ -17,9 +17,15 @@
 #include QMK_KEYBOARD_H // Include QMK keyboard header
 #include "uart.h" // Include UART header
 #include "gpio.h" // Include GPIO header
+#include <stdio.h> // Include standard I/O header for logging
+#include "hardware/gpio.h" // Include GPIO header for RP2040
 
 #define SLEEP_TIMEOUT 300000 // 5 minutes in milliseconds
 #define UART_NUM 0 // Define UART number
+#define PICO_DEFAULT_LED_PIN 25 // Define default LED pin for RP2040
+#define GPIO_OUT 1 // Define GPIO output mode
+#define portTICK_PERIOD_MS 1 // Define portTICK_PERIOD_MS macro
+#define pdMS_TO_TICKS(ms) ((ms) / portTICK_PERIOD_MS) // Define pdMS_TO_TICKS macro
 
 static uint32_t sleep_timer = 0; // Timer to track inactivity
 
@@ -34,6 +40,11 @@ enum custom_keycodes {
     KC_BATT_LVL = SAFE_RANGE, // Define custom keycode for battery level
     // ...other custom keycodes...
 };
+
+// Declare missing functions
+void uart_send_keycode(char command);
+int uart_read_bytes(int uart_num, uint8_t *data, int length, int ticks_to_wait);
+bool matrix_is_modified(void);
 
 // Function to send commands to ESP32-C6 via UART
 void send_command_to_esp32(char command) {
@@ -54,7 +65,7 @@ void handle_uart_communication(void) {
                 rgb_matrix_set_color_all(0, 255, 0); // Set RGB to green for wireless mode
                 break;
             default:
-                ESP_LOGI("RP2040", "Received unknown command: 0x%02X", data);
+                printf("RP2040: Received unknown command: 0x%02X\n", data); // Log unknown command
                 break;
         }
     }
@@ -156,7 +167,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_NO, KC_P0, KC_PDOT, KC_NO, KC_LEFT, KC_DOWN, KC_RIGHT, KC_LCTL, KC_LALT, KC_NO, KC_NO, KC_NO, KC_SPC, KC_NO, KC_NO, KC_NO, KC_RALT, KC_RGUI, MO(FN), KC_RCTL
     ),
     [FN] = LAYOUT(
-        RESET,   _______, _______, _______, KC_NO  , KC_NO  , KC_NO  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_BATT_LVL,
+        KC_NO  ,   _______, _______, _______, KC_NO  , KC_NO  , KC_NO  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_BATT_LVL,
         _______, _______, _______, _______, DM_REC1, DM_REC2, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, 
         _______, _______, _______, _______, DM_REC1, DM_REC2, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, KC_NO  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_NO  , _______,

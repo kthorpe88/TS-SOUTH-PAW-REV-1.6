@@ -135,7 +135,13 @@
     #define RGB_MATRIX_SCROLL_LOCK_COLOR {0, 0, 255} // Blue color for Scroll Lock
 #endif // RGB_MATRIX_ENABLE 
 
+// Define NOP_FUDGE for ws2812 bitbang driver
+#define NOP_FUDGE 1
+
 // UART configuration for RP2040
 #define UART_TX_PIN GP0 // Define the TX pin for UART
 #define UART_RX_PIN GP1 // Define the RX pin for UART
+
+// Manufacturer information
+#define MANUFACTURER "TS Design Works LLC"
 
