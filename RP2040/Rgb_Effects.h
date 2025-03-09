@@ -3,7 +3,7 @@
 #define RGB_EFFECTS_H
 
 // Include the QMK keyboard library
-#include "tssouthpaw/qmk_keyboard.h"
+#include "tssouthpaw/config.h"
 
 // External variable declarations
 // Flags for pulse effects on Caps Lock and Num Lock
