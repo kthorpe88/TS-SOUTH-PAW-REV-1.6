@@ -152,18 +152,3 @@ void indicate_battery_level(void) {
         rgb_matrix_set_val(60); // Dim to 60/255 when battery low
     }
 }
-
-// Define analogRead function and BATTERY_LEVEL_PIN constant
-uint32_t analogRead(uint8_t pin) {
-    // Implement the function to read analog value from the specified pin
-    // This is a placeholder implementation
-    return 0;
-}
-
-#define BATTERY_LEVEL_PIN 0
-
-// Define rgb_matrix_set_val function
-void rgb_matrix_set_val(uint8_t val) {
-    // Implement the function to set RGB matrix value
-    // This is a placeholder implementation
-}
