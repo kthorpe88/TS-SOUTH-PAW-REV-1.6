@@ -15,7 +15,7 @@
         "extrakey": true,
         "mousekey": false,
         "nkro": false,
-        "power_management": true // New feature
+
     },
     "qmk": {
         "locking": {
