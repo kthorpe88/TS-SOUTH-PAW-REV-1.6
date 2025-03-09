@@ -41,10 +41,37 @@ enum custom_keycodes {
     // ...other custom keycodes...
 };
 
-// Declare missing functions
+extern bool pulse_active_caps;
+extern bool pulse_active_num;
+extern uint8_t prev_rgb_mode_caps;
+extern uint8_t prev_rgb_mode_num;
+extern bool is_esc_active;
+extern bool is_esc_ripple_active;
+extern bool is_usb_connected;
+
 void uart_send_keycode(char command);
 int uart_read_bytes(int uart_num, uint8_t *data, int length, int ticks_to_wait);
 bool matrix_is_modified(void);
+void uart_init(uint32_t baud); // Update to match the correct type
+
+// Define the missing functions
+void uart_send_keycode(char command) {
+    // Implementation for sending keycode via UART
+}
+
+int uart_read_bytes(int uart_num, uint8_t *data, int length, int ticks_to_wait) {
+    // Implementation for reading bytes from UART
+    return 0; // Placeholder return value
+}
+
+bool matrix_is_modified(void) {
+    // Implementation for checking if the matrix is modified
+    return false; // Placeholder return value
+}
+
+void uart_init(uint32_t baud) {
+    // Implementation for initializing UART
+}
 
 // Function to send commands to ESP32-C6 via UART
 void send_command_to_esp32(char command) {
@@ -85,11 +112,6 @@ void matrix_scan_user(void) {
         suspend_wakeup_init(); // Wake from suspend
     }
     handle_uart_communication(); // Handle UART communication with ESP32-C6
-}
-
-// Function to handle power down during suspend
-void suspend_power_down(void) {
-    // No encoder pins to disable
 }
 
 // Function to process custom keycodes
@@ -159,7 +181,7 @@ void keyboard_post_init_user(void) {
 // Keymap definitions
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT(
-        KC_ESC, KC_DEL, KC_NUM_LOCK, KC_KB_MUTE, KC_NO, KC_NO, KC_NO, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12, LGUI(KC_L), 
+        KC_ESC, KC_DEL, KC_NUM_LOCK, KC_KB_MUTE, KC_NO, KC_NO, KC_MUTE, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12, LGUI(KC_L), 
         KC_BSPC, KC_PSLS, KC_PAST, KC_PMNS, DM_PLY1, DM_PLY2, KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_MINS,KC_EQL, KC_BSPC,       
         KC_P7, KC_P8, KC_P9, KC_PPLS, DM_PLY1, DM_PLY2, KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_LBRC, KC_RBRC, KC_BSLS,      
         KC_P4, KC_P5, KC_P6, KC_NO, KC_CALC, KC_PSCR, KC_CAPS, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_QUOT, KC_NO, KC_ENT,                 
@@ -167,7 +189,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_NO, KC_P0, KC_PDOT, KC_NO, KC_LEFT, KC_DOWN, KC_RIGHT, KC_LCTL, KC_LALT, KC_NO, KC_NO, KC_NO, KC_SPC, KC_NO, KC_NO, KC_NO, KC_RALT, KC_RGUI, MO(FN), KC_RCTL
     ),
     [FN] = LAYOUT(
-        KC_NO  ,   _______, _______, _______, KC_NO  , KC_NO  , KC_NO  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_BATT_LVL,
+        _______, _______, _______, _______, KC_NO  , KC_NO  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_BATT_LVL,
         _______, _______, _______, _______, DM_REC1, DM_REC2, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, 
         _______, _______, _______, _______, DM_REC1, DM_REC2, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, KC_NO  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_NO  , _______,

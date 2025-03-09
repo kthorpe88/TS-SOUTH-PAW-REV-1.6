@@ -142,6 +142,3 @@
 #define UART_TX_PIN GP0 // Define the TX pin for UART
 #define UART_RX_PIN GP1 // Define the RX pin for UART
 
-// Manufacturer information
-#define MANUFACTURER "TS Design Works LLC"
-

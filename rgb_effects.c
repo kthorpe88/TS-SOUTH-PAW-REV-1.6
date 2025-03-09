@@ -16,16 +16,18 @@
 #define RGB_MATRIX_SLEEP // Enable sleep mode
 
 // Ripple effect variables for ESC
-extern bool is_esc_active; // ESC ripple effect active flag
+bool is_esc_active = false; // ESC ripple effect active flag
+bool is_esc_ripple_active = false;
+bool is_usb_connected = false;
 static uint8_t ripple_step = 0; // Current ripple step
 static uint16_t ripple_timer = 0; // Timer for ripple effect
 static bool ripple_expanding = true; // Ripple expanding flag
 
 // Caps Lock and Num Lock pulsing variables
-extern uint8_t prev_rgb_mode_caps; // Previous RGB mode for Caps Lock
-extern uint8_t prev_rgb_mode_num; // Previous RGB mode for Num Lock
-extern bool pulse_active_caps; // Caps Lock pulsing active flag
-extern bool pulse_active_num; // Num Lock pulsing active flag
+uint8_t prev_rgb_mode_caps = 0; // Previous RGB mode for Caps Lock
+uint8_t prev_rgb_mode_num = 0; // Previous RGB mode for Num Lock
+bool pulse_active_caps = false; // Caps Lock pulsing active flag
+bool pulse_active_num = false; // Num Lock pulsing active flag
 
 // Ripple configuration for ESC
 const uint8_t esc_splash_ripple[][10] = {
@@ -119,10 +121,3 @@ void handle_esc_ripple_effect(void) {
         }
     }
 }
-
-void keyboard_post_init_user(void) {
-    rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
-    rgb_matrix_sethsv(85, 255, 128); // Default green
-}
-
-// Remove battery level related functions and definitions

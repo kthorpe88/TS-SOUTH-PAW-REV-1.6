@@ -1,7 +1,8 @@
 {
-    "keyboard_name": "tssouthpaw", 
-    "url": "", 
-    "maintainer": "ts_design_works_llc", 
+    "keyboard_name": "tssouthpaw",
+    "url": "",
+    "maintainer": "ts_design_works_llc",
+    "manufacturer": "TS Design Works LLC", // Add manufacturer field
     "usb": {
         "vid": "0x7856",
         "pid": "0x6163",
@@ -14,8 +15,7 @@
         "console": false,
         "extrakey": true,
         "mousekey": false,
-        "nkro": false,
-
+        "nkro": false
     },
     "qmk": {
         "locking": {
@@ -24,11 +24,11 @@
         }
     },
     "matrix_size": {
-        "cols": 20,
+        "cols": 21,
         "rows": 6
     },
     "matrix_pins": {
-        "cols": ["GP26", "GP25", "GP24", "GP23", "GP22", "GP16", "GP17", "GP15", "GP14", "GP13", "GP12", "GP11", "GP10", "GP9", "GP8", "GP7", "GP6", "GP5", "GP4", "GP3"],
+        "cols": ["GP26", "GP25", "GP24", "GP23", "GP22", "GP16", "GP17", "GP15", "GP14", "GP13", "GP12", "GP11", "GP10", "GP9", "GP8", "GP7", "GP6", "GP5", "GP4", "GP3", "GP2"]
         "rows": ["GP29", "GP28", "GP21", "GP20", "GP19", "GP18"]
     },
     "ws2812": {
@@ -51,10 +51,10 @@
                 {"label": "Esc", "matrix": [0, 0], "x":0, "y":0}, 
                 {"label": "Delete", "matrix": [0, 1], "x":1, "y":0}, 
                 {"label": "Num Lock", "matrix": [0, 2], "x":2, "y":0}, 
-                {"label": "Mute", "matrix": [0, 3], "x":3, "y":0}, 
+                {"label": "Mic_Mute", "matrix": [0, 3], "x":3, "y":0}, 
                 {"label": "No", "matrix": [0, 4], "x":4, "y":0}, 
                 {"label": "No", "matrix": [0, 5], "x":5, "y":0}, 
-                {"label": "No", "matrix": [0, 6], "x":6, "y":0}, 
+                {"label": "Mute", "matrix": [0, 6], "x":6, "y":0}, 
                 {"label": "F1", "matrix": [0, 7], "x":7, "y":0}, 
                 {"label": "F2", "matrix": [0, 8], "x":8, "y":0}, 
                 {"label": "F3", "matrix": [0, 9], "x":9, "y":0}, 
