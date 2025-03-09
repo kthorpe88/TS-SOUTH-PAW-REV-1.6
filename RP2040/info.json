@@ -29,11 +29,11 @@
         "rows": 6
     },
     "matrix_pins": {
-        "cols": ["GPIO26_ADC0", "GPIO25", "GPIO24", "GPIO23", "GPIO22", "GPIO16", "GPIO17", "GPIO15", "GPIO14", "GPIO13", "GPIO12", "GPIO11", "GPIO10", "GPIO9", "GPIO8", "GPIO7", "GPIO6", "GPIO5", "GPIO4", "GPIO3"],
-        "rows": ["GPIO29_ADC3", "GPIO28_ADC2", "GPIO21", "GPIO20", "GPIO19", "GPIO18"]
+        "cols": ["GP26", "GP25", "GP24", "GP23", "GP22", "GP16", "GP17", "GP15", "GP14", "GP13", "GP12", "GP11", "GP10", "GP9", "GP8", "GP7", "GP6", "GP5", "GP4", "GP3"],
+        "rows": ["GP29", "GP28", "GP21", "GP20", "GP19", "GP18"]
     },
     "ws2812": {
-        "pin": "GPIO27_ADC1" // Define the pin for RGB LED data input
+        "pin": "GP27" // Define the pin for RGB LED data input
     },
     "diode_direction": "COL2ROW",
     "processor": "RP2040",

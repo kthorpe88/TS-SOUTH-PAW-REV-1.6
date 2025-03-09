@@ -26,14 +26,14 @@
     #define ESP32_C6_BATTERY_CHARGING_ENABLE
     #define ESP32_C6_BATTERY_PIN 35 // Example pin for battery voltage monitoring
     // Encoder configuration for ESP32-C6
-    #define ENCODERS_PAD_A { GPIO11 } // Updated to match the provided mapping
-    #define ENCODERS_PAD_B { GPIO10 } // Updated to match the provided mapping
+    #define ENCODERS_PAD_A { GP11 } // Updated to match the provided mapping
+    #define ENCODERS_PAD_B { GP10 } // Updated to match the provided mapping
     // USB configuration for ESP32-C6
-    #define ESP32_C6_USBN_PIN GPIO12 // Updated to match the provided mapping
-    #define ESP32_C6_USBP_PIN GPIO13 // Updated to match the provided mapping
+    #define ESP32_C6_USBN_PIN GP12 // Updated to match the provided mapping
+    #define ESP32_C6_USBP_PIN GP13 // Updated to match the provided mapping
     // Serial configuration for ESP32-C6
-    #define SERIAL_TX_PIN GPIO29 // Updated to match the provided mapping
-    #define SERIAL_RX_PIN GPIO30 // Updated to match the provided mapping
+    #define SERIAL_TX_PIN GP29 // Updated to match the provided mapping
+    #define SERIAL_RX_PIN GP30 // Updated to match the provided mapping
 #endif
 
 // Bluetooth configurations
@@ -55,4 +55,4 @@
 #endif // BATTERY_CHARGING_ENABLE
 
 // Battery level indication configuration for ESP32-C6
-#define BATTERY_LEVEL_PIN 35 // Define the pin for battery level monitoring
+#define BATTERY_LEVEL_PIN GP09 // Define the pin for battery level monitoring
