@@ -19,6 +19,7 @@ DYNAMIC_MACRO_ENABLE = yes
 RGB_MATRIX_FRAMEBUFFER_EFFECTS = yes
 RGB_MATRIX_KEYPRESSES = yes
 ENABLE_RGB_MATRIX_SOLID_REACTIVE_WIDE = yes
+POWER_MANAGEMENT_ENABLE = yes # Enable power management feature
 
 # Source files
 SRC += tssouthpaw/rgb_effects.c

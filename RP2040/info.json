@@ -1,5 +1,5 @@
 {
-    "keyboard_name": "ts_south_paw_rev_1_6", 
+    "keyboard_name": "tssouthpaw", 
     "url": "", 
     "maintainer": "ts_design_works_llc", 
     "usb": {
@@ -15,7 +15,7 @@
         "extrakey": true,
         "mousekey": false,
         "nkro": false,
-        "power_management": true, // New feature
+        "power_management": true // New feature
     },
     "qmk": {
         "locking": {
