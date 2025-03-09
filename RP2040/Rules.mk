@@ -20,9 +20,5 @@ RGB_MATRIX_FRAMEBUFFER_EFFECTS = yes
 RGB_MATRIX_KEYPRESSES = yes
 ENABLE_RGB_MATRIX_SOLID_REACTIVE_WIDE = yes
 
-# Bluetooth and battery management
-BLUETOOTH_ENABLE = yes
-BATTERY_CHARGING_ENABLE = yes
-
 # Source files
 SRC += rgb_effects.c

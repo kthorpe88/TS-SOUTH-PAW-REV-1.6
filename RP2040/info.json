@@ -16,7 +16,6 @@
         "mousekey": false,
         "nkro": false,
         "power_management": true, // New feature
-        "battery_charging": true // New feature
     },
     "qmk": {
         "locking": {
