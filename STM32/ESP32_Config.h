@@ -50,9 +50,9 @@
 // Battery charging configurations
 #ifdef BATTERY_CHARGING_ENABLE
     // Battery charging configuration for ESP32-C6
-    #define BATTERY_CHARGING_PIN GPIO35 // Example pin for battery voltage monitoring
+    #define BATTERY_CHARGING_PIN  // Example pin for battery voltage monitoring
     #define BATTERY_CHARGING_THRESHOLD 3.7 // Voltage threshold for charging
 #endif // BATTERY_CHARGING_ENABLE
 
 // Battery level indication configuration for ESP32-C6
-#define BATTERY_LEVEL_PIN GP09 // Define the pin for battery level monitoring
+#define BATTERY_LEVEL_PIN GP9 // Define the pin for battery level monitoring

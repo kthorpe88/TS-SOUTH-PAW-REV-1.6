@@ -136,12 +136,6 @@
 #endif // RGB_MATRIX_ENABLE 
 
 // UART configuration for RP2040
-#define UART_TX_PIN GP29 // Define the TX pin for UART
-#define UART_RX_PIN GP30 // Define the RX pin for UART
+#define UART_TX_PIN GP0 // Define the TX pin for UART
+#define UART_RX_PIN GP1 // Define the RX pin for UART
 
-// Battery charging configurations
-#ifdef BATTERY_CHARGING_ENABLE
-    // Battery charging configuration for dual MCU setup
-    #define BATTERY_CHARGING_PIN GPIO35 // Example pin for battery voltage monitoring
-    #define BATTERY_CHARGING_THRESHOLD 3.7 // Voltage threshold for charging
-#endif // BATTERY_CHARGING_ENABLE
