@@ -35,6 +35,12 @@
     "processor": "RP2040",
     "bootloader": "rp2040",
     "platform": "RP2040",
+    "vial": {
+        "keyboard_UID": [0xB1,0x22,0xC3,0xD4,0xE5,0xF6,0x17,0x28,0x39,0x4A,0x5B,0x6C,0x7D,0x8E,0x9F,0x00],
+        "dynamic_keymap": {
+            "layer_count": 2
+        }
+    },
     "layouts": {
         "LAYOUT": {
             "layout": [

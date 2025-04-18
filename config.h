@@ -26,3 +26,8 @@
 #define ENCODERS_PAD_A { GP1 }
 #define ENCODERS_PAD_B { GP0 }
 #define ENCODER_RESOLUTION 4
+
+// Vial dynamic keymap support
+#define VIAL_ENABLE
+#define DYNAMIC_KEYMAP_ENABLE
+#define DYNAMIC_KEYMAP_LAYER_COUNT 2  // BASE + FN layers
