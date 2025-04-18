@@ -29,5 +29,8 @@
 
 // Vial dynamic keymap support
 #define VIAL_ENABLE
+#define VIAL_KEYBOARD_UID {0xB1, 0x22, 0xC3, 0xD4, 0xE5, 0xF6, 0x17, 0x28, 0x39, 0x4A, 0x5B, 0x6C, 0x7D, 0x8E, 0x9F, 0x00}
 #define DYNAMIC_KEYMAP_ENABLE
 #define DYNAMIC_KEYMAP_LAYER_COUNT 2  // BASE + FN layers
+#define RAW_ENABLE
+#define RAW_HID_ENABLE
