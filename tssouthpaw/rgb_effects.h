@@ -34,6 +34,19 @@
      EFFECT_FLASH,
      EFFECT_SOLID
  } rgb_effect_type_t;
+
+ /* Work Timer Definitions */
+#define WORK_TIMER_LED_START   4    // F1 key LED
+#define WORK_TIMER_LED_END     15   // F12 key LED
+#define WORK_TIMER_DURATION    28800000   // 8 hours in milliseconds
+#define LUNCH_BREAK_START      14400000   // 4 hours in milliseconds
+#define LUNCH_BREAK_DURATION   3600000    // 1 hour in milliseconds
+#define BREAK_WARNING_TIME     300000     // 5 minutes in milliseconds
+
+// Work timer effect functions
+void toggle_work_timer(void);
+void update_work_timer(void);
+void handle_work_timer(void);
  
  /**
   * Function declarations for handling RGB effects

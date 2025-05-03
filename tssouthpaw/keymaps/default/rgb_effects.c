@@ -250,17 +250,226 @@
  }
  
  /**
+ * Work Timer state variables
+ */
+static struct {
+    bool active;
+    uint32_t start_time;
+    uint32_t elapsed_time;
+    bool lunch_break;
+    bool lunch_warning_shown;
+    bool end_warning_shown;
+    bool paused;
+    uint32_t pause_time;
+} work_timer_state = {false, 0, 0, false, false, false, false, 0};
+
+/**
+ * Work Timer color gradient from green to red
+ */
+static const rgb_color_t WORK_TIMER_START_COLOR = {0, 255, 0};    // Green
+static const rgb_color_t WORK_TIMER_MID_COLOR = {255, 255, 0};    // Yellow
+static const rgb_color_t WORK_TIMER_END_COLOR = {255, 0, 0};      // Red
+static const rgb_color_t WORK_TIMER_LUNCH_COLOR = {0, 0, 255};    // Blue
+static const rgb_color_t WORK_TIMER_WARNING_COLOR = {255, 0, 0};  // Red
+
+/**
+ * Calculate color gradient between two colors based on progress (0.0 - 1.0)
+ */
+static rgb_color_t calculate_gradient_color(rgb_color_t start, rgb_color_t end, float progress) {
+    rgb_color_t result;
+    result.r = start.r + (int)((float)(end.r - start.r) * progress);
+    result.g = start.g + (int)((float)(end.g - start.g) * progress);
+    result.b = start.b + (int)((float)(end.b - start.b) * progress);
+    return result;
+}
+
+/**
+ * Toggle the work timer on/off
+ */
+void toggle_work_timer(void) {
+    if (!work_timer_state.active) {
+        // Start the timer
+        work_timer_state.active = true;
+        work_timer_state.start_time = timer_read32();
+        work_timer_state.elapsed_time = 0;
+        work_timer_state.lunch_break = false;
+        work_timer_state.lunch_warning_shown = false;
+        work_timer_state.end_warning_shown = false;
+        work_timer_state.paused = false;
+        work_timer_state.pause_time = 0;
+    } else {
+        // Stop the timer
+        work_timer_state.active = false;
+    }
+}
+
+/**
+ * Pause or resume the work timer
+ */
+void toggle_pause_work_timer(void) {
+    if (!work_timer_state.active) return;
+    
+    if (!work_timer_state.paused) {
+        // Pause the timer
+        work_timer_state.paused = true;
+        work_timer_state.pause_time = timer_read32();
+    } else {
+        // Resume the timer, adjust start time to account for pause duration
+        uint32_t pause_duration = timer_read32() - work_timer_state.pause_time;
+        work_timer_state.start_time += pause_duration;
+        work_timer_state.paused = false;
+    }
+}
+
+/**
+ * Update the work timer state
+ */
+void update_work_timer(void) {
+    if (!work_timer_state.active || work_timer_state.paused) return;
+    
+    // Calculate elapsed time
+    work_timer_state.elapsed_time = timer_read32() - work_timer_state.start_time;
+    
+    // Check for lunch break
+    if (work_timer_state.elapsed_time >= LUNCH_BREAK_START && 
+        work_timer_state.elapsed_time < (LUNCH_BREAK_START + LUNCH_BREAK_DURATION)) {
+        work_timer_state.lunch_break = true;
+        
+        // Check for lunch break warning (5 min before end)
+        if (!work_timer_state.lunch_warning_shown && 
+            work_timer_state.elapsed_time >= (LUNCH_BREAK_START + LUNCH_BREAK_DURATION - BREAK_WARNING_TIME)) {
+            work_timer_state.lunch_warning_shown = true;
+        }
+    } else {
+        work_timer_state.lunch_break = false;
+    }
+    
+    // Check for end of day warning (5 min before end)
+    if (!work_timer_state.end_warning_shown && 
+        work_timer_state.elapsed_time >= (WORK_TIMER_DURATION - BREAK_WARNING_TIME)) {
+        work_timer_state.end_warning_shown = true;
+    }
+    
+    // Auto-stop after 8 hours
+    if (work_timer_state.elapsed_time >= WORK_TIMER_DURATION) {
+        work_timer_state.active = false;
+    }
+}
+
+/**
+ * Handle the work timer visualization on LEDs
+ */
+void handle_work_timer(void) {
+    if (!work_timer_state.active) return;
+    
+    // Number of LEDs in the progress bar
+    const uint8_t num_leds = WORK_TIMER_LED_END - WORK_TIMER_LED_START + 1;
+    
+    // Calculate overall progress (0.0 - 1.0)
+    float overall_progress = (float)work_timer_state.elapsed_time / (float)WORK_TIMER_DURATION;
+    if (overall_progress > 1.0f) overall_progress = 1.0f;
+    
+    // Lunch break or end warning - flash all LEDs
+    if ((work_timer_state.lunch_break && (timer_read() % 500) < 250) || 
+        (work_timer_state.end_warning_shown && (timer_read() % 500) < 250)) {
+        
+        rgb_color_t flash_color;
+        if (work_timer_state.lunch_break) {
+            // Flash blue during lunch break
+            flash_color = WORK_TIMER_LUNCH_COLOR;
+        } else {
+            // Flash red for end warning
+            flash_color = WORK_TIMER_WARNING_COLOR;
+        }
+        
+        // Apply flash color to all progress bar LEDs
+        for (uint8_t i = 0; i < num_leds; i++) {
+            rgb_matrix_set_color(WORK_TIMER_LED_START + i, 
+                                flash_color.r,
+                                flash_color.g,
+                                flash_color.b);
+        }
+    } else {
+        // Normal progress bar display
+        // Calculate hour segments and LED positions
+        float hours_per_led = 8.0f / (float)num_leds;
+        float hours_elapsed = overall_progress * 8.0f;
+        
+        // Determine how many LEDs should be fully lit
+        uint8_t leds_lit = (uint8_t)(hours_elapsed / hours_per_led);
+        if (leds_lit > num_leds) leds_lit = num_leds;
+        
+        // Calculate progress within the current LED
+        float current_led_progress = (hours_elapsed - (leds_lit * hours_per_led)) / hours_per_led;
+        
+        // Set colors for each LED in the progress bar
+        for (uint8_t i = 0; i < num_leds; i++) {
+            rgb_color_t color;
+            
+            if (i < leds_lit) {
+                // Fully lit LED - calculate gradient color based on position
+                float led_position = (float)i / (float)(num_leds - 1);
+                
+                // First half uses green to yellow gradient
+                if (led_position < 0.5f) {
+                    float half_progress = led_position * 2.0f; // Scale to 0.0 - 1.0 for first half
+                    color = calculate_gradient_color(WORK_TIMER_START_COLOR, WORK_TIMER_MID_COLOR, half_progress);
+                }
+                // Second half uses yellow to red gradient
+                else {
+                    float half_progress = (led_position - 0.5f) * 2.0f; // Scale to 0.0 - 1.0 for second half
+                    color = calculate_gradient_color(WORK_TIMER_MID_COLOR, WORK_TIMER_END_COLOR, half_progress);
+                }
+            }
+            else if (i == leds_lit) {
+                // Current LED - partially lit based on progress
+                float led_position = (float)i / (float)(num_leds - 1);
+                
+                rgb_color_t full_color;
+                // First half uses green to yellow gradient
+                if (led_position < 0.5f) {
+                    float half_progress = led_position * 2.0f; // Scale to 0.0 - 1.0 for first half
+                    full_color = calculate_gradient_color(WORK_TIMER_START_COLOR, WORK_TIMER_MID_COLOR, half_progress);
+                }
+                // Second half uses yellow to red gradient
+                else {
+                    float half_progress = (led_position - 0.5f) * 2.0f; // Scale to 0.0 - 1.0 for second half
+                    full_color = calculate_gradient_color(WORK_TIMER_MID_COLOR, WORK_TIMER_END_COLOR, half_progress);
+                }
+                
+                // Dim the color based on progress within this LED
+                color.r = full_color.r * current_led_progress;
+                color.g = full_color.g * current_led_progress;
+                color.b = full_color.b * current_led_progress;
+            }
+            else {
+                // Unlit LED
+                color.r = 0;
+                color.g = 0;
+                color.b = 0;
+            }
+            
+            // Set the LED color
+            rgb_matrix_set_color(WORK_TIMER_LED_START + i, color.r, color.g, color.b);
+        }
+    }
+}
+ /**
   * Combined overlay for arrow-keys + reactive handlers
   */
  bool rgb_matrix_indicators_user(void) {
-     // Apply arrow key highlighting
-     handle_arrow_keys();
-     
-     // Run all reactive handlers
-     handle_caps_lock_rgb();
-     handle_num_lock_rgb();
-     handle_mic_mute_rgb();
-     handle_esc_ripple_effect();
- 
-     return true;  // continue with the normal effect pipeline
- }
+    // Apply arrow key highlighting
+    handle_arrow_keys();
+    
+    // Run all reactive handlers
+    handle_caps_lock_rgb();
+    handle_num_lock_rgb();
+    handle_mic_mute_rgb();
+    handle_esc_ripple_effect();
+    
+    // Handle work timer (new addition)
+    update_work_timer();
+    handle_work_timer();
+
+    return true;  // continue with the normal effect pipeline
+}

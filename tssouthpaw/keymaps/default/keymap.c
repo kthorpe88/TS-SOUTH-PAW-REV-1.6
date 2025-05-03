@@ -24,11 +24,13 @@
      MEDIA // Media control layer
  };
  
- // Define custom keycodes
- enum custom_keycodes {
-     KC_MICMUTE = SAFE_RANGE, // Microphone mute key
-     KC_MEDIA,                // Media layer toggle
- };
+// Define custom keycodes
+enum custom_keycodes {
+    KC_MICMUTE = SAFE_RANGE, // Microphone mute key
+    KC_MEDIA,                // Media layer toggle
+    KC_WRKTMR,               // Work timer toggle
+    KC_WRKPAU,               // Work timer pause/resume
+};
  
  /**
  * Encoder mapping
@@ -155,7 +157,7 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
          _______, _______, _______, _______, KC_NO  , KC_NO  , KC_NO  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
          _______, _______, _______, RM_VALD, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_NO  , _______,
          _______, _______, _______, KC_NO  , _______, _______, KC_NO  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-         _______, _______, _______, RM_VALU, _______, _______, KC_NO  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_NO  , _______,
+         _______, _______, _______, RM_VALU, KC_WRKTMR, KC_WRKPAU, KC_NO  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_NO  , _______,
          _______, _______, _______, KC_NO  , KC_NO  , RM_HUEU, KC_NO  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_NO  , _______, KC_NO  ,
          KC_NO,   _______, _______, _______, RM_PREV, RM_HUED, RM_NEXT, KC_NO  , _______, _______, KC_NO  , KC_NO  , KC_NO  , _______, KC_NO  , KC_NO  , _______, KC_NO  , _______, _______, _______                      
      ),
